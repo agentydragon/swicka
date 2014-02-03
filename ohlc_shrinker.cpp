@@ -17,8 +17,12 @@ bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 
 	for (QDateTime now = start; now < start.addSecs(quantumSeconds); now = now.addSecs(source->getQuantumSeconds())) {
 		OHLC tick;
-		if (!source->tryGetData(now, tick)) continue;
+		if (!source->tryGetData(now, tick)) {
+			// qDebug() << "parent didn't give data for" << now;
+			continue;
+		}
 
+		// qDebug() << "parent gave" << tick << "for" << now;
 		if (!someCollected) {
 			output = tick;
 			someCollected = true;
@@ -26,6 +30,12 @@ bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 			output << tick;
 		}
 	}
+
+	/*
+	if (!someCollected) {
+		qDebug() << "parent said nothing for" << start;
+	}
+	*/
 
 	return someCollected;
 }

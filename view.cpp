@@ -1,5 +1,13 @@
-
 #include "view.h"
+
+#include "ohlc_standardizer.h"
+#include "ohlc_shrinker.h"
+#include "ohlc_random_generator.h"
+
+#include "graph_event_controller.h"
+
+#include "candle.h"
+#include "grid.h"
 
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
@@ -12,25 +20,23 @@
 #endif
 #include <qmath.h>
 
-#ifndef QT_NO_WHEELEVENT
 void GraphicsView::wheelEvent(QWheelEvent *e) {
-	if (e->modifiers() & Qt::ControlModifier) {
-		if (e->delta() > 0)
-			view->zoomIn(6);
-		else
-			view->zoomOut(6);
-		e->accept();
+	// if (e->modifiers() & Qt::ControlModifier) {
+	if (e->delta() > 0) {
+		view->zoomIn(1);
 	} else {
-		QGraphicsView::wheelEvent(e);
+		view->zoomOut(1);
 	}
+	e->accept();
 }
-#endif
 
 void GraphicsView::resizeEvent(QResizeEvent*) {
 	emit resized();
 }
 
 View::View(const QString &name, QWidget *parent) : QFrame(parent) {
+	source = NULL;
+
 	setFrameStyle(Sunken | StyledPanel);
 	graphicsView = new GraphicsView(this);
 	graphicsView->setRenderHint(QPainter::Antialiasing, false);
@@ -43,53 +49,15 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	QSize iconSize(size, size);
 
 	QToolButton *zoomInIcon = new QToolButton;
-	zoomInIcon->setAutoRepeat(true);
-	zoomInIcon->setAutoRepeatInterval(33);
-	zoomInIcon->setAutoRepeatDelay(0);
-	// zoomInIcon->setIcon(QPixmap(":/zoomin.png"));
-	zoomInIcon->setIconSize(iconSize);
 	QToolButton *zoomOutIcon = new QToolButton;
-	zoomOutIcon->setAutoRepeat(true);
-	zoomOutIcon->setAutoRepeatInterval(33);
-	zoomOutIcon->setAutoRepeatDelay(0);
-	// zoomOutIcon->setIcon(QPixmap(":/zoomout.png"));
-	zoomOutIcon->setIconSize(iconSize);
-	zoomSlider = new QSlider;
-	zoomSlider->setMinimum(0);
-	zoomSlider->setMaximum(500);
-	zoomSlider->setValue(250);
-	zoomSlider->setTickPosition(QSlider::TicksRight);
 
 	// Zoom slider layout
 	QVBoxLayout *zoomSliderLayout = new QVBoxLayout;
 	zoomSliderLayout->addWidget(zoomInIcon);
-	zoomSliderLayout->addWidget(zoomSlider);
 	zoomSliderLayout->addWidget(zoomOutIcon);
-
-	/*
-	   QToolButton *rotateLeftIcon = new QToolButton;
-	   rotateLeftIcon->setIcon(QPixmap(":/rotateleft.png"));
-	   rotateLeftIcon->setIconSize(iconSize);
-	   QToolButton *rotateRightIcon = new QToolButton;
-	   rotateRightIcon->setIcon(QPixmap(":/rotateright.png"));
-	   rotateRightIcon->setIconSize(iconSize);
-	   rotateSlider = new QSlider;
-	   rotateSlider->setOrientation(Qt::Horizontal);
-	   rotateSlider->setMinimum(-360);
-	   rotateSlider->setMaximum(360);
-	   rotateSlider->setValue(0);
-	   rotateSlider->setTickPosition(QSlider::TicksBelow);
-
-	// Rotate slider layout
-	QHBoxLayout *rotateSliderLayout = new QHBoxLayout;
-	rotateSliderLayout->addWidget(rotateLeftIcon);
-	rotateSliderLayout->addWidget(rotateSlider);
-	rotateSliderLayout->addWidget(rotateRightIcon);
-	*/
 
 	resetButton = new QToolButton;
 	resetButton->setText(tr("0"));
-	resetButton->setEnabled(false);
 
 	// Label layout
 	QHBoxLayout *labelLayout = new QHBoxLayout;
@@ -137,28 +105,33 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	topLayout->addLayout(labelLayout, 0, 0);
 	topLayout->addWidget(graphicsView, 1, 0);
 	topLayout->addLayout(zoomSliderLayout, 1, 1);
-	// topLayout->addLayout(rotateSliderLayout, 2, 0);
 	topLayout->addWidget(resetButton, 2, 1);
 	setLayout(topLayout);
 
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(resetView()));
-	connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(setupMatrix()));
-	// connect(rotateSlider, SIGNAL(valueChanged(int)), this, SLOT(setupMatrix()));
-	connect(graphicsView->verticalScrollBar(), SIGNAL(valueChanged(int)),
-			this, SLOT(setResetButtonEnabled()));
-	connect(graphicsView->horizontalScrollBar(), SIGNAL(valueChanged(int)),
-			this, SLOT(setResetButtonEnabled()));
 	connect(selectModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
 	connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
 	connect(antialiasButton, SIGNAL(toggled(bool)), this, SLOT(toggleAntialiasing()));
 	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
-	// connect(rotateLeftIcon, SIGNAL(clicked()), this, SLOT(rotateLeft()));
-	// connect(rotateRightIcon, SIGNAL(clicked()), this, SLOT(rotateRight()));
 	connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoomIn()));
 	connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
 	connect(printButton, SIGNAL(clicked()), this, SLOT(print()));
 
 	setupMatrix();
+
+	scene = new QGraphicsScene;
+	view()->setScene(scene);
+
+	connect(view(), SIGNAL(resized()), this, SLOT(redraw()));
+}
+
+void View::candleEntered(QDateTime start) {
+	// TODO
+	qDebug() << "candle entered:" << start;
+}
+
+void View::candleLeft() {
+	qDebug() << "candle exited";
 }
 
 QGraphicsView *View::view() const {
@@ -166,27 +139,19 @@ QGraphicsView *View::view() const {
 }
 
 void View::resetView() {
-	zoomSlider->setValue(250);
-	// rotateSlider->setValue(0);
+	// viewBegin = source->getMinimum();
+	// viewEnd = source->getMaximum();
+	// viewAtom = source->getQuantumSeconds();
+	zoomLevel = 0.0;
 	setupMatrix();
 	graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
 
 	resetButton->setEnabled(false);
 }
 
-void View::setResetButtonEnabled() {
-	resetButton->setEnabled(true);
-}
-
 void View::setupMatrix() {
-	qreal scale = qPow(qreal(2), (zoomSlider->value() - 250) / qreal(50));
-
-	QMatrix matrix;
-	matrix.scale(scale, scale);
-	// matrix.rotate(rotateSlider->value());
-
+	QMatrix matrix; // identity
 	graphicsView->setMatrix(matrix);
-	setResetButtonEnabled();
 }
 
 void View::togglePointerMode() {
@@ -218,19 +183,78 @@ void View::print() {
 }
 
 void View::zoomIn(int level) {
-	zoomSlider->setValue(zoomSlider->value() + level);
+	zoomLevel += level * 0.1;
+	redraw();
 }
 
 void View::zoomOut(int level) {
-	zoomSlider->setValue(zoomSlider->value() - level);
+	zoomLevel -= level * 0.1;
+	if (zoomLevel <= 0) zoomLevel = 0;
+	redraw();
 }
 
-/*
-void View::rotateLeft() {
-	rotateSlider->setValue(rotateSlider->value() - 10);
+void View::redraw() {
+	scene->clear();
+
+	if (!source) {
+		qDebug() << "redrawing with NULL source, drawing nothing.";
+		return;
+	}
+
+	if (source->isEmpty()) {
+		qDebug() << "source is empty...";
+		return;
+	}
+
+	QDateTime viewBegin = source->getMinimum();
+	QDateTime viewEnd = viewBegin;
+	double tickCount = (float)(source->getMaximum().toTime_t() - source->getMinimum().toTime_t()) / source->getQuantumSeconds();
+
+	double shownTickCount = tickCount / exp(zoomLevel);
+	if (shownTickCount < 10) shownTickCount = 10;
+
+	viewEnd = viewEnd.addSecs(source->getQuantumSeconds() * round(shownTickCount));
+
+	int viewAtom = source->getQuantumSeconds();
+	qDebug() << "view start:" << viewBegin << "view end:" << viewEnd << "view atom:" << viewAtom;
+
+	OHLCStandardizer* provider = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
+
+	long totalWidth = view()->width(), totalHeight = view()->height();
+	qDebug() << "width" << totalWidth << "height" << totalHeight;
+
+	scene->addItem(new Grid(totalWidth, totalHeight, provider->getSourceClosure(), QList<float>(), QList<float>()));
+
+	// Populate scene
+	int nitems = 0;
+	int x = 0;
+
+	long candle_count = (provider->getMaximum().toTime_t() - provider->getMinimum().toTime_t()) / provider->getQuantumSeconds();
+
+	float candleWidth = (float)totalWidth / (float)candle_count;
+	float graphHeight = totalHeight;
+
+	GraphEventController* controller = new GraphEventController();
+	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
+	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
+
+	for (QDateTime start = provider->getMinimum(); start < provider->getMaximum(); start = start.addSecs(provider->getQuantumSeconds())) {
+		OHLC tick;
+		if (provider->tryGetData(start, tick)) {
+			Candle *item = new Candle(start, tick, candleWidth, graphHeight, controller);
+			item->setPos(QPointF(x * candleWidth, 0));
+
+			scene->addItem(item);
+			// qDebug() << tick;
+			++nitems;
+		}
+		x++;
+	}
+
+	qDebug() << "Scene created with" << nitems << "ticks";
 }
 
-void View::rotateRight() {
-	rotateSlider->setValue(rotateSlider->value() + 10);
+void View::changeDataSource(OHLCProvider* source) {
+	this->source = source;
+	redraw();
 }
-*/

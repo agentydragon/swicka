@@ -10,24 +10,22 @@
 class QGraphicsScene;
 class QSplitter;
 
-class MainWindow : public QWidget
-{
-    Q_OBJECT
-public:
-    MainWindow(QWidget *parent = 0);
+class MainWindow : public QWidget {
+	Q_OBJECT
+	public:
+		MainWindow(QWidget *parent = 0);
 
-private:
-    void setupMatrix();
-    void loadData();
+	private:
+		void setupMatrix();
+		void loadData();
 
-    OHLCMemoryProvider* memProvider;
-    YahooLoader* yl;
+		OHLCMemoryProvider* source;
+		YahooLoader* yl;
 
-    QGraphicsScene *scene;
+		View *view;
 
-    View *view;
-public slots:
-	void drawData();
+	public slots:
+		void drawData();
 };
 
 #endif // MAINWINDOW_H

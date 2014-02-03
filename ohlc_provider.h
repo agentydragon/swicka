@@ -10,6 +10,8 @@ class OHLCProvider {
 		virtual QDateTime getMaximum() = 0;
 		virtual int getQuantumSeconds() = 0;
 		virtual bool tryGetData(QDateTime start, OHLC& output) = 0;
+
+		bool isEmpty();
 };
 
 #endif

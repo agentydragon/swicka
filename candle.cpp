@@ -3,10 +3,24 @@
 #include <QtWidgets>
 
 // Expected to be standardized to (1.0) == min-max of whole scene
-Candle::Candle(OHLC ohlc, float width, float height) {
+Candle::Candle(QDateTime time, OHLC ohlc, float width, float height, GraphEventController* controller) {
+	this->time = time;
 	this->ohlc = ohlc;
 	this->width = width;
 	this->height = height;
+	this->controller = controller;
+
+	setAcceptHoverEvents(true);
+}
+
+void Candle::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
+	Q_UNUSED(event);
+	controller->signalCandleEntered(time);
+}
+
+void Candle::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
+	Q_UNUSED(event);
+	controller->signalCandleLeft();
 }
 
 QRectF Candle::boundingRect() const {
@@ -22,11 +36,9 @@ QPainterPath Candle::shape() const {
 void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	Q_UNUSED(widget);
 
-	// qDebug() << "Rendering:" << ohlc;
-
-	float penWidth = 0.1f;
+	float penWidth = 0.3f;
 	if (option->state & QStyle::State_Selected)
-		penWidth += 0.2f;
+		penWidth += 0.3f;
 
 	// background of graph
 	//painter->fillRect(QRect(0, 0, width, height), QBrush(QColor(200, 200, 200)));
@@ -40,7 +52,6 @@ void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 	/*
 	   if (lod >= 1) {
 	   painter->setPen(QPen(Qt::gray, 1));
-	   painter->drawLine(15, 54, 94, 54);
 	   painter->drawLine(94, 53, 94, 15);
 	   painter->setPen(QPen(Qt::black, 0));
 	   }
