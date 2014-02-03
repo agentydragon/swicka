@@ -1,4 +1,5 @@
 #include "csv_reader.h"
+#include <QDebug>
 
 CSVReader::CSVReader(QTextStream* stream) {
 	this->stream = stream;
@@ -10,6 +11,7 @@ bool CSVReader::loadNextLine() {
 	if (currentLine.isNull()) {
 		return false;
 	} else {
+		qDebug() << currentLine;
 		fields = currentLine.split(','); // TODO: all the crazy formats and such
 		return true;
 	}

@@ -7,8 +7,7 @@
 
 #include "ohlc.h"
 
-class Candle : public QGraphicsItem
-{
+class Candle : public QGraphicsItem {
 public:
 	// TODO: nebyl by lepsi decimal?
     Candle(OHLC ohlc, float width, float height);

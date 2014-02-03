@@ -1,4 +1,5 @@
 #include <cmath>
+#include <QDebug>
 #include "ohlc.h"
 
 using namespace std;
@@ -22,4 +23,9 @@ void OHLC::standardizeTo(OHLC general) {
 	::standardizeTo(high, general);
 	::standardizeTo(low, general);
 	::standardizeTo(close, general);
+}
+
+QDebug operator<< (QDebug d, const OHLC &ohlc) {
+	d << "[O:" << ohlc.open << "H:" << ohlc.high << "L:" << ohlc.low << "C:" << ohlc.close << "]";
+    return d;
 }

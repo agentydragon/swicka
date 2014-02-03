@@ -9,6 +9,8 @@ class OHLCStandardizer: public OHLCProvider {
 		bool sourceEmpty;
 		OHLC sourceClosure;
 	public:
+		OHLC getSourceClosure();
+
 		OHLCStandardizer(OHLCProvider* source);
 		virtual QDateTime getMinimum();
 		virtual QDateTime getMaximum();

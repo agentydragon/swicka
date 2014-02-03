@@ -2,14 +2,12 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <QFrame>
 #include <QGraphicsView>
 
 class QLabel;
 class QSlider;
 class QToolButton;
 
-/*
 class View;
 
 class GraphicsView : public QGraphicsView {
@@ -22,10 +20,14 @@ protected:
     void wheelEvent(QWheelEvent *);
 #endif
 
+    void resizeEvent(QResizeEvent *);
+
 private:
     View *view;
+
+signals:
+    void resized();
 };
-*/
 
 class View : public QFrame {
     Q_OBJECT

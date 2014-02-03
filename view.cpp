@@ -12,7 +12,6 @@
 #endif
 #include <qmath.h>
 
-/*
 #ifndef QT_NO_WHEELEVENT
 void GraphicsView::wheelEvent(QWheelEvent *e) {
 	if (e->modifiers() & Qt::ControlModifier) {
@@ -26,11 +25,14 @@ void GraphicsView::wheelEvent(QWheelEvent *e) {
 	}
 }
 #endif
-*/
+
+void GraphicsView::resizeEvent(QResizeEvent*) {
+	emit resized();
+}
 
 View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	setFrameStyle(Sunken | StyledPanel);
-	graphicsView = new QGraphicsView(new QGraphicsScene, this);
+	graphicsView = new GraphicsView(this);
 	graphicsView->setRenderHint(QPainter::Antialiasing, false);
 	graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 	graphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState);
@@ -160,7 +162,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 }
 
 QGraphicsView *View::view() const {
-	return graphicsView; // static_cast<QGraphicsView *>(graphicsView);
+	return static_cast<QGraphicsView *>(graphicsView);
 }
 
 void View::resetView() {

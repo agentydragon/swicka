@@ -1,5 +1,9 @@
 #include "ohlc_standardizer.h"
 
+OHLC OHLCStandardizer::getSourceClosure() {
+	return sourceClosure;
+}
+
 OHLCStandardizer::OHLCStandardizer(OHLCProvider* source) {
 	this->source = source;
 	sourceEmpty = true;

@@ -1,6 +1,8 @@
 #ifndef OHLC_H_INCLUDED
 #define OHLC_H_INCLUDED
 
+#include <QDebug>
+
 struct OHLC {
 	public:
 		OHLC() {}
@@ -11,5 +13,7 @@ struct OHLC {
 		bool isUp();
 		void standardizeTo(OHLC general);
 };
+
+QDebug operator<< (QDebug d, const OHLC &ohlc);
 
 #endif
