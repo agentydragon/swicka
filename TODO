@@ -1,0 +1,16 @@
+TODO:
+	- nacitani dat ze souboru
+	- GUIcko k otevreni dat z Yahoo
+	- MACD, RSI, Bollinger band
+	- cary, sipky, Fibonacci retractments
+	- load/save graph (recipe)
+	- image export
+	- prepocitavani svicek na vetsi
+
+NICE TO HAVE:
+	- parabolic SAR
+	- logarithmic scale
+	- volume
+	- caching
+	- drawing settings
+	- updatovani existujiciho grafu podle novych dat 
