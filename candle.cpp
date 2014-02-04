@@ -3,11 +3,11 @@
 #include <QtWidgets>
 
 // Expected to be standardized to (1.0) == min-max of whole scene
-Candle::Candle(QDateTime time, OHLC ohlc, float width, float height, GraphEventController* controller) {
+Candle::Candle(QDateTime time, OHLC ohlc, float width, GraphRanges ranges, GraphEventController* controller) {
 	this->time = time;
 	this->ohlc = ohlc;
 	this->width = width;
-	this->height = height;
+	this->ranges = ranges;
 	this->controller = controller;
 
 	setAcceptHoverEvents(true);
@@ -24,12 +24,12 @@ void Candle::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 }
 
 QRectF Candle::boundingRect() const {
-	return QRectF(0, 0, width, height);
+	return QRectF(0, 0, width, ranges.height);
 }
 
 QPainterPath Candle::shape() const {
 	QPainterPath path;
-	path.addRect(0, 0, width, height);
+	path.addRect(0, 0, width, ranges.height);
 	return path;
 }
 
@@ -44,10 +44,13 @@ void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 	//painter->fillRect(QRect(0, 0, width, height), QBrush(QColor(200, 200, 200)));
 
 	painter->setPen(QPen(Qt::gray, penWidth));
-	painter->drawLine(QPointF(width / 2.0f, (1 - ohlc.low) * height), QPointF(width / 2.0f, (1 - ohlc.high) * height));
 
+	float yLow = ranges.getPriceY(ohlc.low), yHigh = ranges.getPriceY(ohlc.high);
+	painter->drawLine(QPointF(width / 2.0f, yLow), QPointF(width / 2.0f, yHigh));
+
+	float yOpen = ranges.getPriceY(ohlc.open), yClose = ranges.getPriceY(ohlc.close);
 	QColor fillColor = ohlc.isUp() ? QColor(0, 255, 0) : QColor(255, 0, 0);
-	painter->fillRect(QRectF(0, (1.0 - ohlc.open) * height, width, (- (ohlc.close - ohlc.open)) * height), QBrush(fillColor));
+	painter->fillRect(QRectF(0.0f, yOpen, width, yClose - yOpen), QBrush(fillColor));
 
 	/*
 	   if (lod >= 1) {

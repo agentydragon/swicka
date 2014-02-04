@@ -13,3 +13,8 @@ float GraphRanges::getTimeX(QDateTime time) {
 float GraphRanges::getTimeSpanWidth(float secs) {
 	return secs / (end.toTime_t() - start.toTime_t()) * width;
 }
+
+QDateTime GraphRanges::getXTime(float x) {
+	float level = x / width;
+	return start.addSecs((float)(end.toTime_t() - start.toTime_t()) * level);
+}

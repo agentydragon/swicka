@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 
 #include "ohlc_provider.h"
+#include "graph_ranges.h"
 
 class QLabel;
 class QSlider;
@@ -31,8 +32,7 @@ class View : public QFrame {
 		QGraphicsView *view() const;
 
 	public slots:
-		void zoomIn(int level = 1);
-		void zoomOut(int level = 1);
+		void zoom(int level = 1, int x = -1);
 		void changeDataSource(OHLCProvider* source);
 		void redraw();
 		void resetView(); // reset to default view
@@ -47,7 +47,7 @@ class View : public QFrame {
 		void candleLeft();
 
 	private:
-		QDateTime viewBegin;
+		QDateTime viewBegin, viewEnd;
 		int viewAtom;
 		double zoomLevel;
 

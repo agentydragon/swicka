@@ -22,11 +22,7 @@
 
 void GraphicsView::wheelEvent(QWheelEvent *e) {
 	// if (e->modifiers() & Qt::ControlModifier) {
-	if (e->delta() > 0) {
-		view->zoomIn(1);
-	} else {
-		view->zoomOut(1);
-	}
+	view->zoom(e->delta(), e->x());
 	e->accept();
 }
 
@@ -113,14 +109,14 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
 	connect(antialiasButton, SIGNAL(toggled(bool)), this, SLOT(toggleAntialiasing()));
 	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
-	connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoomIn()));
-	connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
+	// connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoom()));
+	// connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
 	connect(printButton, SIGNAL(clicked()), this, SLOT(print()));
-
-	setupMatrix();
 
 	scene = new QGraphicsScene;
 	view()->setScene(scene);
+
+	resetView();
 
 	connect(view(), SIGNAL(resized()), this, SLOT(redraw()));
 }
@@ -139,14 +135,24 @@ QGraphicsView *View::view() const {
 }
 
 void View::resetView() {
-	// viewBegin = source->getMinimum();
 	// viewEnd = source->getMaximum();
 	// viewAtom = source->getQuantumSeconds();
 	zoomLevel = 0.0;
 	setupMatrix();
 	graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
 
-	resetButton->setEnabled(false);
+	if (source) {
+		//double tickCount = (float)(source->getMaximum().toTime_t() - source->getMinimum().toTime_t()) / source->getQuantumSeconds();
+
+		//double shownTickCount = tickCount / exp(zoomLevel);
+		//if (shownTickCount < 10) shownTickCount = 10;
+
+		viewBegin = source->getMinimum();
+		viewEnd = source->getMaximum();
+		//viewEnd = viewBegin.addSecs(source->getQuantumSeconds() * round(shownTickCount));
+	}
+
+	redraw();
 }
 
 void View::setupMatrix() {
@@ -182,18 +188,55 @@ void View::print() {
 #endif
 }
 
-void View::zoomIn(int level) {
-	zoomLevel += level * 0.1;
-	redraw();
+void View::zoom(int level, int x) {
+	GraphRanges ranges;
+	ranges.width = view()->width();
+	ranges.height = view()->height();
+	ranges.start = viewBegin;
+	ranges.end = viewEnd;
+
+	double zoomBefore = zoomLevel;
+	double zoomAfter = zoomLevel + level * 0.001;
+
+	qDebug() << "scroll: x=" << x << "time=" << ranges.getXTime(x);
+
+	double secondsWidthBase = source->getMaximum().toTime_t() - source->getMinimum().toTime_t();
+	double secondsWidthNow = secondsWidthBase / exp(zoomBefore);
+	double newSecondsWidth = secondsWidthBase / exp(zoomAfter);
+
+	double newBeginT = 
+		((double)ranges.getXTime(x).toTime_t())
+		-
+			(
+				((double)ranges.getXTime(x).toTime_t() - (double)viewBegin.toTime_t())
+				* (newSecondsWidth) / (secondsWidthNow)
+			);
+
+	QDateTime newBegin = QDateTime::fromTime_t(newBeginT);
+	if (newBegin < source->getMinimum()) newBegin = source->getMinimum();
+	if (newBegin.addSecs(secondsWidthNow) > source->getMaximum()) newBegin = source->getMaximum().addSecs(-secondsWidthNow);
+
+	QDateTime newEnd = newBegin.addSecs(secondsWidthNow);
+
+	if (zoomAfter <= 0) {
+		// TODO: or <10 candles shown then
+		zoomLevel = 0;
+	} else {
+		// commit
+		viewBegin = newBegin;
+		viewEnd = newEnd;
+
+		qDebug() << "new view begin=" << viewBegin << "end=" << viewEnd;
+
+		zoomLevel = zoomAfter;
+
+	//	zoomLevel += level * 0.001;
+
+		redraw();
+	}
 }
 
-void View::zoomOut(int level) {
-	zoomLevel -= level * 0.1;
-	if (zoomLevel <= 0) zoomLevel = 0;
-	redraw();
-}
-
-const float VIEW_MARGIN = 0.1;
+const float VIEW_MARGIN = 0.2;
 
 void View::redraw() {
 	scene->clear();
@@ -208,19 +251,11 @@ void View::redraw() {
 		return;
 	}
 
-	QDateTime viewBegin = source->getMinimum();
-	QDateTime viewEnd = viewBegin;
-	double tickCount = (float)(source->getMaximum().toTime_t() - source->getMinimum().toTime_t()) / source->getQuantumSeconds();
-
-	double shownTickCount = tickCount / exp(zoomLevel);
-	if (shownTickCount < 10) shownTickCount = 10;
-
-	viewEnd = viewEnd.addSecs(source->getQuantumSeconds() * round(shownTickCount));
+	// QDateTime viewBegin = source->getMinimum();
+	// QDateTime viewEnd = viewBegin;
 
 	int viewAtom = source->getQuantumSeconds();
 	qDebug() << "view start:" << viewBegin << "view end:" << viewEnd << "view atom:" << viewAtom;
-
-	OHLCStandardizer* provider = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
 
 	GraphRanges ranges;
 	ranges.width = view()->width();
@@ -228,8 +263,11 @@ void View::redraw() {
 	ranges.start = viewBegin;
 	ranges.end = viewEnd;
 
-	float low = provider->getSourceClosure().low;
-	float high = provider->getSourceClosure().high;
+	OHLCProvider* provider = new OHLCShrinker(source, viewBegin, viewEnd, viewAtom);
+	OHLCStandardizer* standardized = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
+
+	float low = standardized->getSourceClosure().low;
+	float high = standardized->getSourceClosure().high;
 
 	ranges.priceLow = low - (high - low) * (VIEW_MARGIN / 2);
 	ranges.priceHigh = high + (high - low) * (VIEW_MARGIN / 2);
@@ -249,7 +287,7 @@ void View::redraw() {
 		OHLC tick;
 		if (provider->tryGetData(start, tick)) {
 			float width = ranges.getTimeSpanWidth(quantum);
-			Candle *item = new Candle(start, tick, width, ranges.height, controller);
+			Candle *item = new Candle(start, tick, width, ranges, controller);
 			item->setPos(QPointF(ranges.getTimeX(start), 0));
 			scene->addItem(item);
 			++nitems;
@@ -261,5 +299,5 @@ void View::redraw() {
 
 void View::changeDataSource(OHLCProvider* source) {
 	this->source = source;
-	redraw();
+	resetView();
 }

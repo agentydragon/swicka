@@ -13,6 +13,7 @@ struct GraphRanges {
 		float getPriceY(float price);
 		float getTimeX(QDateTime time);
 		float getTimeSpanWidth(float secs);
+		QDateTime getXTime(float x);
 };
 
 #endif
