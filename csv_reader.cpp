@@ -11,7 +11,7 @@ bool CSVReader::loadNextLine() {
 	if (currentLine.isNull()) {
 		return false;
 	} else {
-		qDebug() << currentLine;
+		// qDebug() << currentLine;
 		fields = currentLine.split(','); // TODO: all the crazy formats and such
 		return true;
 	}

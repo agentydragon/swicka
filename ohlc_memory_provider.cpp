@@ -12,7 +12,10 @@ long OHLCMemoryProvider::getTimeIndex(QDateTime time) {
 	long start = getMinimum().toTime_t(), end = getMaximum().toTime_t();
 	long t = time.toTime_t();
 	
-	if (t < start || t > end) throw "out of range";
+	if (t < start || t > end) {
+		qDebug() << "OHLC memory provider out of range: minimum=" << minimum << "maximum=" << maximum << "t=" << time;
+		throw "out of range";
+	}
 
 	return (t - start) / quantumSeconds;
 }

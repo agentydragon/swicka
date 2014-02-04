@@ -27,6 +27,8 @@ float GridLabeler::generateYLabelStep(float min, float max) {
 			case 5: multiplier = 1; base *= 10; break;
 		}
 		ticks = ceil(difference / (base * multiplier));
+
+		qDebug() << "mult=" << multiplier << "base=" << base;
 	}
 
 	while (ticks < labelsLeast) {
@@ -36,9 +38,11 @@ float GridLabeler::generateYLabelStep(float min, float max) {
 			case 5: multiplier = 2; break;
 		}
 		ticks = ceil(difference / (base * multiplier));
+
+		qDebug() << "mult=" << multiplier << "base=" << base;
 	}
 
-	return multiplier;
+	return multiplier * base;
 }
 
 void GridLabeler::generateYLabels(float min, float max, QList<QPair<float, QString> > &labels) {
@@ -51,7 +55,7 @@ void GridLabeler::generateYLabels(float min, float max, QList<QPair<float, QStri
 			labels.push_back(QPair<float, QString>(a, QString::number(a)));
 		}
 	}
-	qDebug() << "Y labels generated";
+	qDebug() << labels.size() << "Y labels generated with step" << step;
 }
 
 #include "x_axis_year_labeler.h"

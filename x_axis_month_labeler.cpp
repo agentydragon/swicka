@@ -9,7 +9,6 @@ QList<QPair<QDateTime, QString> > XAxisMonthLabeler::makeLabels(QDateTime start,
 
 	QList<QPair<QDateTime, QString> > labels;
 	for (; a <= end; a.setDate(a.date().addMonths(1))) {
-		qDebug() << "* " << a;
 		labels.push_back(QPair<QDateTime, QString>(a, a.toString("MM/yyyy")));
 	}
 	return labels;

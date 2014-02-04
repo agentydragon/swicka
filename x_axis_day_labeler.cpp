@@ -8,7 +8,6 @@ QList<QPair<QDateTime, QString> > XAxisDayLabeler::makeLabels(QDateTime start, Q
 
 	QList<QPair<QDateTime, QString> > labels;
 	for (; a <= end; a.setDate(a.date().addDays(1))) {
-		qDebug() << "* " << a;
 		labels.push_back(QPair<QDateTime, QString>(a, a.toString("dd.MM.")));
 	}
 	return labels;
