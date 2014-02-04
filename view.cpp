@@ -193,6 +193,8 @@ void View::zoomOut(int level) {
 	redraw();
 }
 
+const float VIEW_MARGIN = 0.1;
+
 void View::redraw() {
 	scene->clear();
 
@@ -220,35 +222,38 @@ void View::redraw() {
 
 	OHLCStandardizer* provider = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
 
-	long totalWidth = view()->width(), totalHeight = view()->height();
-	qDebug() << "width" << totalWidth << "height" << totalHeight;
+	GraphRanges ranges;
+	ranges.width = view()->width();
+	ranges.height = view()->height();
+	ranges.start = viewBegin;
+	ranges.end = viewEnd;
 
-	scene->addItem(new Grid(totalWidth, totalHeight, provider->getSourceClosure()));
+	float low = provider->getSourceClosure().low;
+	float high = provider->getSourceClosure().high;
+
+	ranges.priceLow = low - (high - low) * (VIEW_MARGIN / 2);
+	ranges.priceHigh = high + (high - low) * (VIEW_MARGIN / 2);
+
+	scene->addItem(new Grid(ranges));
 
 	// Populate scene
 	int nitems = 0;
-	int x = 0;
-
-	long candle_count = (provider->getMaximum().toTime_t() - provider->getMinimum().toTime_t()) / provider->getQuantumSeconds();
-
-	float candleWidth = (float)totalWidth / (float)candle_count;
-	float graphHeight = totalHeight;
 
 	GraphEventController* controller = new GraphEventController();
 	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
 	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
 
-	for (QDateTime start = provider->getMinimum(); start < provider->getMaximum(); start = start.addSecs(provider->getQuantumSeconds())) {
+	int quantum = provider->getQuantumSeconds();
+
+	for (QDateTime start = ranges.start; start < ranges.end; start = start.addSecs(quantum)) {
 		OHLC tick;
 		if (provider->tryGetData(start, tick)) {
-			Candle *item = new Candle(start, tick, candleWidth, graphHeight, controller);
-			item->setPos(QPointF(x * candleWidth, 0));
-
+			float width = ranges.getTimeSpanWidth(quantum);
+			Candle *item = new Candle(start, tick, width, ranges.height, controller);
+			item->setPos(QPointF(ranges.getTimeX(start), 0));
 			scene->addItem(item);
-			// qDebug() << tick;
 			++nitems;
 		}
-		x++;
 	}
 
 	qDebug() << "Scene created with" << nitems << "ticks";

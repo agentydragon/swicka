@@ -3,18 +3,18 @@
 
 #include <QtWidgets>
 
-#include "ohlc.h"
+#include "graph_ranges.h"
 
 class Grid: public QGraphicsItem {
 	public:
-		Grid(float width, float height, OHLC general);
+		Grid(GraphRanges ranges);
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 		QRectF boundingRect() const;
 		QPainterPath shape() const;
 	private:
-		float width, height;
-		OHLC general;
-		QList<float> labels;
+		GraphRanges ranges;
+		QList<QPair<QDateTime, QString> > xlabels;
+		QList<QPair<float, QString> > ylabels;
 };
 
 #endif

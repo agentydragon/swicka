@@ -2,12 +2,15 @@
 #define GRID_LABELER_H_INCLUDED
 
 #include <QList>
+#include <QPair>
+#include <QDateTime>
 
 class GridLabeler {
 	private:
-		float generateLabelStep(float min, float max);
+		float generateYLabelStep(float min, float max);
 	public:
-		void generateLabels(float min, float max, QList<float> &labels);
+		void generateYLabels(float min, float max, QList<QPair<float, QString> > &labels);
+		void generateXLabels(QDateTime min, QDateTime max, QList<QPair<QDateTime, QString> > &labels);
 };
 
 #endif
