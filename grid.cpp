@@ -29,7 +29,7 @@ void Grid::paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidge
 		float x = ranges.getTimeX(label.first);
 
 		painter->setPen(Qt::red);
-		painter->drawText(QRect(x, 10, x + 50.0f, 20.0f), Qt::AlignCenter, label.second);
+		painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignCenter, label.second);
 
 		painter->setPen(Qt::gray);
 		painter->drawLine(x, 0.0, x, ranges.height);
