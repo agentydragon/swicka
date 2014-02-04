@@ -2,17 +2,11 @@
 #include <QFile>
 #include <QNetworkReply>
 
-#include "csv_reader.h"
 #include "yahoo_loader.h"
 
 #include <assert.h>
 
 // TODO: QTemporaryFile
-
-// Yahoo CSV format:
-// [header]:
-//	Date,Open,High,Low,Close,Volume,Adj Close
-//	2012-12-21,35.32,35.62,34.73,35.49,3889700,35.49
 
 YahooLoader::YahooLoader(QString symbol, Period period, OHLCMemoryProvider* storage) {
 	this->symbol = symbol;
@@ -33,28 +27,15 @@ void YahooLoader::requestFinished(QNetworkReply* reply) {
 		file->flush();
 		file->close();
 		*/
-		CSVReader reader(new QTextStream(reply));
-		reader.loadNextLine();
-		assert(reader.getField(0) == "Date");
-
-		while (reader.loadNextLine()) {
-			QDate date = QDate::fromString(reader.getField(0), "yyyy-MM-dd");
-
-			float open = reader.getField(1).toFloat(),
-			      high = reader.getField(2).toFloat(),
-			      low = reader.getField(3).toFloat(),
-			      close = reader.getField(4).toFloat();
-
-			OHLC tick(open, high, low, close);
-			// qDebug() << date << '\t' << open << '\t' << high << '\t' << low << '\t' << close;
-
-			storage->addData(QDateTime(date), tick);
-		}
-
-		qDebug() << "All incoming data was read.";
-
-		emit dataLoaded();
+		csvLoader = new YahooCSVLoader(reply, storage);
+		connect(csvLoader, SIGNAL(dataLoaded()), this, SLOT(csvLoaded()));
+		csvLoader->load();
 	}
+}
+
+void YahooLoader::csvLoaded() {
+	qDebug() << "CSV loaded.";
+	emit dataLoaded();
 }
 
 QUrl YahooLoader::buildUrl(QString symbol, QDateTime start, QDateTime end, Period period) {

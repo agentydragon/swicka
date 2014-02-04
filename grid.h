@@ -7,14 +7,14 @@
 
 class Grid: public QGraphicsItem {
 	public:
-		Grid(float width, float height, OHLC general, QList<float> major, QList<float> minor);
+		Grid(float width, float height, OHLC general);
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 		QRectF boundingRect() const;
 		QPainterPath shape() const;
 	private:
 		float width, height;
 		OHLC general;
-		QList<float> major, minor;
+		QList<float> labels;
 };
 
 #endif

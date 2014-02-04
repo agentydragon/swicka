@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 
 void MainWindow::loadData() {
 	source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), 24 * 60 * 60);
-	yl = new YahooLoader("GOOG", YahooLoader::DAY, source);
+	yl = new YahooLoader("ADSK", YahooLoader::DAY, source);
 
 	qDebug() << "Connecting signals";
 	connect(yl, SIGNAL(dataLoaded()), this, SLOT(drawData()));

@@ -223,7 +223,7 @@ void View::redraw() {
 	long totalWidth = view()->width(), totalHeight = view()->height();
 	qDebug() << "width" << totalWidth << "height" << totalHeight;
 
-	scene->addItem(new Grid(totalWidth, totalHeight, provider->getSourceClosure(), QList<float>(), QList<float>()));
+	scene->addItem(new Grid(totalWidth, totalHeight, provider->getSourceClosure()));
 
 	// Populate scene
 	int nitems = 0;

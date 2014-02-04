@@ -8,9 +8,11 @@
 #include <QUrl>
 #include <QNetworkReply>
 
+#include "data_loader.h"
 #include "ohlc_memory_provider.h"
+#include "yahoo_csv_loader.h"
 
-class YahooLoader: public QObject {
+class YahooLoader: public DataLoader {
 	Q_OBJECT
 
 	public:
@@ -23,9 +25,10 @@ class YahooLoader: public QObject {
 		OHLCMemoryProvider* storage;
 
 		QNetworkAccessManager manager;
+		YahooCSVLoader* csvLoader;
 	public:
 		YahooLoader(QString symbol, Period period, OHLCMemoryProvider* storage);
-		void load();
+		virtual void load();
 	
 	private:
 		QNetworkReply* reply;
@@ -38,6 +41,9 @@ class YahooLoader: public QObject {
 		void slotSslErrors(QList<QSslError> errors);
 		// void readData(const QHttpResponseHeader&);
 		// void requestFinished(int id, bool error);
+		//
+	private slots:
+		void csvLoaded();
 	
 	signals:
 		void dataLoaded();
