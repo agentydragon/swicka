@@ -56,12 +56,15 @@ void GridLabeler::generateYLabels(float min, float max, QList<QPair<float, QStri
 
 #include "x_axis_year_labeler.h"
 #include "x_axis_month_labeler.h"
+#include "x_axis_day_labeler.h"
 
 void GridLabeler::generateXLabels(QDateTime min, QDateTime max, QList<QPair<QDateTime, QString> > &labels) {
 	qDebug() << "generating X labels: min=" << min << "max=" << max;
 	QList<XAxisLabeler*> labelers;
+	// TODO: choose 2 most appropriate labelers...
 	//labelers.push_back(new XAxisYearLabeler);
 	labelers.push_back(new XAxisMonthLabeler);
+	//labelers.push_back(new XAxisDayLabeler);
 	labels = labelers[0]->makeLabels(min, max);
 	qDebug() << "X labels generated";
 }

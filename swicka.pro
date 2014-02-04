@@ -7,7 +7,7 @@ HEADERS += data_loader.h yahoo_loader.h yahoo_csv_loader.h csv_reader.h
 HEADERS += graph_event_controller.h
 HEADERS += grid_labeler.h
 HEADERS += graph_ranges.h
-HEADERS += x_axis_labeler.h x_axis_year_labeler.h x_axis_month_labeler.h
+HEADERS += x_axis_labeler.h x_axis_year_labeler.h x_axis_month_labeler.h x_axis_day_labeler.h
 
 SOURCES += main.cpp
 SOURCES += mainwindow.cpp view.cpp candle.cpp grid.cpp
@@ -17,7 +17,7 @@ SOURCES += yahoo_loader.cpp yahoo_csv_loader.cpp csv_reader.cpp
 SOURCES += graph_event_controller.cpp
 SOURCES += grid_labeler.cpp
 SOURCES += graph_ranges.cpp
-SOURCES += x_axis_year_labeler.cpp x_axis_month_labeler.cpp
+SOURCES += x_axis_year_labeler.cpp x_axis_month_labeler.cpp x_axis_day_labeler.cpp
 
 QT += widgets xml network
 qtHaveModule(printsupport): QT += printsupport
