@@ -5,6 +5,7 @@
 
 #include "ohlc_provider.h"
 #include "graph_ranges.h"
+#include "graph_viewport.h"
 
 class QLabel;
 class QSlider;
@@ -47,9 +48,11 @@ class View : public QFrame {
 		void candleLeft();
 
 	private:
-		QDateTime viewBegin, viewEnd;
-		int viewAtom;
-		double zoomLevel;
+		GraphRanges getRanges();
+		GraphViewport *viewport;
+		// QDateTime viewBegin, viewEnd;
+		// int viewAtom;
+		// double zoomLevel;
 
 		OHLCProvider* source;
 

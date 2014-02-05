@@ -20,6 +20,8 @@
 #endif
 #include <qmath.h>
 
+#include <assert.h>
+
 void GraphicsView::wheelEvent(QWheelEvent *e) {
 	// if (e->modifiers() & Qt::ControlModifier) {
 	view->zoom(e->delta(), e->x());
@@ -135,24 +137,17 @@ QGraphicsView *View::view() const {
 }
 
 void View::resetView() {
-	// viewEnd = source->getMaximum();
-	// viewAtom = source->getQuantumSeconds();
-	zoomLevel = 0.0;
-	setupMatrix();
-	graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
-
 	if (source) {
-		//double tickCount = (float)(source->getMaximum().toTime_t() - source->getMinimum().toTime_t()) / source->getQuantumSeconds();
+		viewport = new GraphViewport(source);
+		connect(viewport, SIGNAL(changed()), this, SLOT(redraw()));
 
-		//double shownTickCount = tickCount / exp(zoomLevel);
-		//if (shownTickCount < 10) shownTickCount = 10;
+		setupMatrix();
+		graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
 
-		viewBegin = source->getMinimum();
-		viewEnd = source->getMaximum();
-		//viewEnd = viewBegin.addSecs(source->getQuantumSeconds() * round(shownTickCount));
+		redraw(); // Because of newly created viewport.
+	} else {
+		qDebug() << "calling resetView with no source, doing nothing";
 	}
-
-	redraw();
 }
 
 void View::setupMatrix() {
@@ -188,95 +183,44 @@ void View::print() {
 #endif
 }
 
-void View::zoom(int level, int x) {
-	GraphRanges ranges;
+GraphRanges View::getRanges() {
+	assert(viewport);
+	GraphRanges ranges = viewport->getInherentRanges(0.2f);
 	ranges.width = view()->width();
 	ranges.height = view()->height();
-	ranges.start = viewBegin;
-	ranges.end = viewEnd;
+	return ranges;
+}
 
-	double zoomBefore = zoomLevel;
-	double zoomAfter = zoomLevel + level * 0.001;
-
-	qDebug() << "scroll: x=" << x << "time=" << ranges.getXTime(x);
-
-	double secondsWidthBase = source->getMaximum().toTime_t() - source->getMinimum().toTime_t();
-	double secondsWidthNow = secondsWidthBase / exp(zoomBefore);
-	double newSecondsWidth = secondsWidthBase / exp(zoomAfter);
-
-	double newBeginT = 
-		((double)ranges.getXTime(x).toTime_t())
-		-
-			(
-				((double)ranges.getXTime(x).toTime_t() - (double)viewBegin.toTime_t())
-				* (newSecondsWidth) / (secondsWidthNow)
-			);
-
-	QDateTime newBegin = QDateTime::fromTime_t(newBeginT);
-	if (newBegin < source->getMinimum()) newBegin = source->getMinimum();
-	if (newBegin.addSecs(secondsWidthNow) > source->getMaximum()) newBegin = source->getMaximum().addSecs(-secondsWidthNow);
-
-	QDateTime newEnd = newBegin.addSecs(secondsWidthNow);
-
-	if (zoomAfter <= 0) {
-		// TODO: or <10 candles shown then
-		zoomLevel = 0;
+void View::zoom(int level, int x) {
+	if (viewport) {
+		viewport->zoom(level, getRanges().getXTime(x));
 	} else {
-		// commit
-		viewBegin = newBegin;
-		viewEnd = newEnd;
-
-		qDebug() << "new view begin=" << viewBegin << "end=" << viewEnd;
-
-		zoomLevel = zoomAfter;
-
-	//	zoomLevel += level * 0.001;
-
-		redraw();
+		qDebug() << "no viewport, doing nothing";
 	}
 }
 
 const float VIEW_MARGIN = 0.2;
 
 void View::redraw() {
-	scene->clear();
-
-	if (!source) {
-		qDebug() << "redrawing with NULL source, drawing nothing.";
+	if (!source || !viewport) {
+		qDebug() << "redrawing with NULL source or viewport, drawing nothing.";
 		return;
 	}
+
+	qDebug() << "view start:" << viewport->getViewBegin() << "view end:" << viewport->getViewEnd();
+	scene->clear();
 
 	if (source->isEmpty()) {
 		qDebug() << "source is empty...";
 		return;
 	}
 
-	// QDateTime viewBegin = source->getMinimum();
-	// QDateTime viewEnd = viewBegin;
-
-	// int viewAtom = source->getQuantumSeconds();
-	qDebug() << "view start:" << viewBegin << "view end:" << viewEnd; // << "view atom:" << viewAtom;
-
-	GraphRanges ranges;
-	ranges.width = view()->width();
-	ranges.height = view()->height();
-	ranges.start = viewBegin;
-	ranges.end = viewEnd;
-
-	OHLCProvider* provider = new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
-	// OHLCStandardizer* standardized = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
-	OHLC closure;
-	if (!OHLC::span(provider, closure)) {
-		qDebug() << "cannot construct closure, probably empty. drawing nothing.";
-		return;
+	OHLCProvider* projection = viewport->getSourceProjection();
+	if (projection->isEmpty()) {
+		qDebug() << "drawing empty projection, doing nothing.";
 	}
 
-	float low = closure.low;
-	float high = closure.high;
-
-	ranges.priceLow = low - (high - low) * (VIEW_MARGIN / 2);
-	ranges.priceHigh = high + (high - low) * (VIEW_MARGIN / 2);
-
+	GraphRanges ranges = getRanges();
 	scene->addItem(new Grid(ranges));
 
 	// Populate scene
@@ -286,18 +230,19 @@ void View::redraw() {
 	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
 	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
 
-	// int quantum = provider->getQuantumSeconds();
-
-	for (QDateTime start = provider->getInterval()->lastBefore(ranges.start);
-			start < provider->getInterval()->firstAfter(ranges.end);
-			start = provider->getInterval()->firstAfter(start)) {
+	for (QDateTime start = projection->getMinimum();
+			start < projection->getMaximum();
+			start = projection->getInterval()->firstAfter(start)) {
 		OHLC tick;
-		if (provider->tryGetData(start, tick)) {
-			QDateTime next = provider->getInterval()->firstAfter(start);
+		if (projection->tryGetData(start, tick)) {
+			QDateTime next = projection->getInterval()->firstAfter(start);
+
 			float width = ranges.getTimeSpanWidth(next.toTime_t() - start.toTime_t());
-			Candle *item = new Candle(start, tick, width, ranges, controller);
-			item->setPos(QPointF(ranges.getTimeX(start), 0));
-			scene->addItem(item);
+
+			Candle *candle = new Candle(start, tick, width, ranges, controller);
+			candle->setPos(QPointF(ranges.getTimeX(start), 0));
+			scene->addItem(candle);
+
 			++nitems;
 		}
 	}

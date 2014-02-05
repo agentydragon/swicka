@@ -8,7 +8,9 @@ TODO:
 	- cary, sipky, Fibonacci retractments
 	- load/save graph (recipe)
 	- image export
-	- prepocitavani svicek na vetsi (1 day ==> 7 day)
+	- prepocitavani svicek na vetsi (1 day ==> 7 day) -- pri prilis velkem odzoomovani
+
+	- optimalizace pocitani vzdalenosti ve dnech a mesicich
 
 NICE TO HAVE:
 	- ukazovatko
@@ -20,3 +22,5 @@ NICE TO HAVE:
 	- updatovani existujiciho grafu podle novych dat
 	- moving averages overlays
 		(a vubec obecne overlays)
+
+TODO: OHLCStandardizer je uz na nic
