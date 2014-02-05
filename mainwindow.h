@@ -21,7 +21,8 @@ class MainWindow : public QMainWindow {
 	private:
 		void createMenus();
 		void createActions();
-		void loadData();
+
+		void doLoadYahooStock(QString stock);
 
 		OHLCMemoryProvider* source;
 		YahooLoader* yl;

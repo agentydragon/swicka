@@ -3,6 +3,8 @@
 #include <QHBoxLayout>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QLineEdit>
+#include <QInputDialog>
 
 #include "ohlc_shrinker.h"
 
@@ -17,7 +19,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 	statusBar()->showMessage("Hello world");
 
-	loadData();
+	// loadData();
+	// doLoadYahooStock("GOOG");
 }
 
 void MainWindow::createActions() {
@@ -36,9 +39,11 @@ void MainWindow::createMenus() {
 	fileMenu->addAction(exitAction);
 }
 
-void MainWindow::loadData() {
+void MainWindow::doLoadYahooStock(QString symbol) {
 	source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
-	yl = new YahooLoader("ADSK", YahooLoader::DAY, source);
+	yl = new YahooLoader(symbol, YahooLoader::DAY, source);
+
+	// TODO: handle errors and so on
 
 	qDebug() << "Connecting signals";
 	connect(yl, SIGNAL(dataLoaded()), this, SLOT(drawData()));
@@ -55,5 +60,25 @@ void MainWindow::drawData() {
 }
 
 void MainWindow::loadYahooStock() {
-	qDebug() << "load yahoo stock...";
+	// TODO: hezci dialog?
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("Zadej symbol"), tr("Symbol:"), QLineEdit::Normal, "ADSK", &ok);
+	if (ok) {
+		if (text.size() > 0) {
+			source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
+			yl = new YahooLoader(text, YahooLoader::DAY, source);
+
+			qDebug() << "Connecting signals";
+			connect(yl, SIGNAL(dataLoaded()), this, SLOT(drawData()));
+
+			qDebug() << "Starting to load data";
+			yl->load();
+
+			qDebug() << "Data started to load";
+		} else {
+			qDebug() << "nic nezadano...";
+		}
+	} else {
+		qDebug() << "uzivatel nic nezadal...";
+	}
 }
