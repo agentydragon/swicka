@@ -2,11 +2,10 @@
 
 #include <QtWidgets>
 
-// Expected to be standardized to (1.0) == min-max of whole scene
-Candle::Candle(QDateTime time, OHLC ohlc, float width, GraphRanges ranges, GraphEventController* controller) {
-	this->time = time;
+Candle::Candle(QDateTime start, QDateTime end, OHLC ohlc, GraphRanges ranges, GraphEventController* controller) {
+	this->start = start;
+	this->end = end;
 	this->ohlc = ohlc;
-	this->width = width;
 	this->ranges = ranges;
 	this->controller = controller;
 
@@ -16,7 +15,7 @@ Candle::Candle(QDateTime time, OHLC ohlc, float width, GraphRanges ranges, Graph
 
 void Candle::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
 	Q_UNUSED(event);
-	controller->signalCandleEntered(time);
+	controller->signalCandleEntered(start);
 }
 
 void Candle::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
@@ -24,19 +23,25 @@ void Candle::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 	controller->signalCandleLeft();
 }
 
+float Candle::getWidth() const {
+	// TODO
+	return ranges.getTimeSpanWidth(end.toTime_t() - start.toTime_t());
+}
+
 QRectF Candle::boundingRect() const {
-	return QRectF(0, 0, width, ranges.height);
+	return QRectF(0, 0, getWidth(), ranges.height);
 }
 
 QPainterPath Candle::shape() const {
 	QPainterPath path;
-	path.addRect(0, 0, width, ranges.height);
+	path.addRect(0, 0, getWidth(), ranges.height);
 	return path;
 }
 
 void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	Q_UNUSED(widget);
 
+	float width = getWidth();
 	float penWidth = width / 10;
 	if (penWidth < 0.5f) penWidth = 0.5f;
 	if (penWidth > 2.0f) penWidth = 2.0f;
@@ -86,4 +91,12 @@ void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 	}
 	painter->drawLines(lines.data(), lines.size());
 	*/
+}
+
+void Candle::setRanges(GraphRanges ranges) {
+	this->ranges = ranges;
+}
+
+QDateTime Candle::getStart() {
+	return start;
 }

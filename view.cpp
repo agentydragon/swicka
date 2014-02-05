@@ -6,9 +6,9 @@
 
 #include "graph_event_controller.h"
 
-#include "candle.h"
 #include "graph_overlay.h"
 #include "grid.h"
+#include "candlesticks_overlay.h"
 
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
@@ -35,6 +35,7 @@ void GraphicsView::resizeEvent(QResizeEvent*) {
 
 View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	source = NULL;
+	viewport = NULL;
 
 	setFrameStyle(Sunken | StyledPanel);
 	graphicsView = new GraphicsView(this);
@@ -121,7 +122,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	resetView();
 
-	connect(view(), SIGNAL(resized()), this, SLOT(notifyOverlays()));
+	connect(view(), SIGNAL(resized()), this, SLOT(notifyOverlaysRangesChanged()));
 	connect(view(), SIGNAL(resized()), this, SLOT(redraw()));
 }
 
@@ -142,12 +143,18 @@ void View::resetView() {
 	if (source) {
 		// margin: 0.5
 		viewport = new GraphViewport(source, 0.5f);
-		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlays()));
+		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));
+		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysRangesChanged()));
 		connect(viewport, SIGNAL(changed()), this, SLOT(redraw()));
 
 		overlays.clear();
-		GraphOverlay* grid = new Grid(viewport, getRanges());
+		GraphOverlay* grid = new Grid(viewport);
 		overlays.push_back(grid);
+		GraphOverlay* candlesticks = new CandlesticksOverlay(viewport);
+		overlays.push_back(candlesticks);
+
+		notifyOverlaysRangesChanged();
+		notifyOverlaysProjectionChanged();
 
 		setupMatrix();
 		graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
@@ -214,6 +221,7 @@ void View::redraw() {
 	}
 
 	qDebug() << "view start:" << viewport->getViewBegin() << "view end:" << viewport->getViewEnd();
+	qDebug() << "(clearing scene)";
 	scene->clear();
 
 	if (source->isEmpty()) {
@@ -226,37 +234,12 @@ void View::redraw() {
 		qDebug() << "drawing empty projection, doing nothing.";
 	}
 
+	qDebug() << "== DRAWING OVERLAYS ==";
 	for (GraphOverlay* overlay: overlays) {
 		overlay->insertIntoScene(scene);
+		qDebug() << "===";
 	}
-
-	GraphRanges ranges = getRanges();
-
-	// Populate scene
-	int nitems = 0;
-
-	GraphEventController* controller = new GraphEventController();
-	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
-	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
-
-	for (QDateTime start = projection->getMinimum();
-			start < projection->getMaximum();
-			start = projection->getInterval()->firstAfter(start)) {
-		OHLC tick;
-		if (projection->tryGetData(start, tick)) {
-			QDateTime next = projection->getInterval()->firstAfter(start);
-
-			float width = ranges.getTimeSpanWidth(next.toTime_t() - start.toTime_t());
-
-			Candle *candle = new Candle(start, tick, width, ranges, controller);
-			candle->setPos(QPointF(ranges.getTimeX(start), 0));
-			scene->addItem(candle);
-
-			++nitems;
-		}
-	}
-
-	qDebug() << "Scene created with" << nitems << "ticks";
+	qDebug() << "== OVERLAYS FINISHED ==";
 }
 
 void View::changeDataSource(OHLCProvider* source) {
@@ -264,10 +247,22 @@ void View::changeDataSource(OHLCProvider* source) {
 	resetView();
 }
 
-void View::notifyOverlays() {
+void View::notifyOverlaysProjectionChanged() {
 	if (viewport) {
-		qDebug() << "notifying overlays of range change";
+		qDebug() << "notifying overlays of projection change";
+		OHLCProvider* projection = viewport->getSourceProjection();
+
+		for (GraphOverlay* overlay: overlays) {
+			overlay->projectionChanged(projection);
+		}
+	}
+}
+
+void View::notifyOverlaysRangesChanged() {
+	if (viewport) {
+		qDebug() << "notifying overlays of ranges change";
 		GraphRanges ranges = getRanges();
+
 		for (GraphOverlay* overlay: overlays) {
 			overlay->rangesChanged(ranges);
 		}

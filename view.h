@@ -69,7 +69,8 @@ class View : public QFrame {
 		QToolButton *resetButton;
 		// QSlider *zoomSlider;
 	private slots:
-		void notifyOverlays();
+		void notifyOverlaysProjectionChanged();
+		void notifyOverlaysRangesChanged();
 };
 
 #endif // VIEW_H

@@ -40,7 +40,7 @@ void MainWindow::createMenus() {
 }
 
 void MainWindow::doLoadYahooStock(QString symbol) {
-	source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
+	source = new OHLCMemoryProvider(QDateTime(QDate(2007, 11, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
 	yl = new YahooLoader(symbol, YahooLoader::DAY, source);
 
 	// TODO: handle errors and so on

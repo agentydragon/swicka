@@ -47,8 +47,8 @@ float GridLabeler::generateYLabelStep(float min, float max) {
 
 void GridLabeler::generateYLabels(float min, float max, QList<QPair<float, QString> > &labels) {
 	// qDebug() << "generating Y labels: min=" << min << "max=" << max;
-	if (min == max) {
-		// qDebug() << "empty range";
+	if (fabs(min - max) < 0.00001) {
+		qDebug() << "empty range"; // TODO: HACK!
 		return;
 	}
 	float step = generateYLabelStep(min, max);

@@ -4,7 +4,6 @@
 #include <QtWidgets>
 
 #include "graph_overlay.h"
-#include "graph_ranges.h"
 
 class GraphViewport;
 
@@ -14,8 +13,9 @@ class Grid: public GraphOverlay {
 		GraphRanges ranges;
 	public slots:
 		virtual void rangesChanged(GraphRanges ranges);
+		virtual void projectionChanged(OHLCProvider* projection);
 	public:
-		Grid(GraphViewport* viewport, GraphRanges ranges);
+		Grid(GraphViewport* viewport);
 		virtual void insertIntoScene(QGraphicsScene* scene);
 
 		class GridGraphics: public QGraphicsItem {

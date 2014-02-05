@@ -12,8 +12,10 @@ struct GraphRanges {
 	public:
 		float getPriceY(float price);
 		float getTimeX(QDateTime time);
-		float getTimeSpanWidth(float secs);
+		float getTimeSpanWidth(float secs) const;
 		QDateTime getXTime(float x);
 };
+
+QDebug operator<< (QDebug d, const GraphRanges &ranges);
 
 #endif

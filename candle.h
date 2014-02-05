@@ -11,22 +11,25 @@
 class Candle : public QGraphicsItem {
 	public:
 		// TODO: nebyl by lepsi decimal?
-		Candle(QDateTime time, OHLC ohlc, float width, GraphRanges ranges, GraphEventController* controller);
+		Candle(QDateTime start, QDateTime end, OHLC ohlc, GraphRanges ranges, GraphEventController* controller);
 
 		QRectF boundingRect() const;
 		QPainterPath shape() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 
 	private:
-		QDateTime time;
+		QDateTime start, end;
 		GraphEventController* controller;
 		void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
 
-	private:
 		GraphRanges ranges;
-		float width;
 		OHLC ohlc;
+
+	public:
+		void setRanges(GraphRanges ranges);
+		float getWidth() const;
+		QDateTime getStart();
 };
 
 #endif // CANDLE_H

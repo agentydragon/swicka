@@ -3,8 +3,6 @@
 
 Grid::GridGraphics::GridGraphics(GraphRanges ranges) {
 	this->ranges = ranges;
-
-	// TODO fuj
 	GridLabeler().generateYLabels(ranges.priceLow, ranges.priceHigh, ylabels);
 	GridLabeler().generateXLabels(ranges.start, ranges.end, xlabels);
 }
@@ -46,9 +44,8 @@ QPainterPath Grid::GridGraphics::shape() const {
 	return path;
 }
 
-Grid::Grid(GraphViewport* viewport, GraphRanges ranges) {
+Grid::Grid(GraphViewport* viewport) {
 	this->viewport = viewport;
-	this->ranges = ranges;
 }
 
 void Grid::insertIntoScene(QGraphicsScene* scene) {
@@ -57,6 +54,10 @@ void Grid::insertIntoScene(QGraphicsScene* scene) {
 }
 
 void Grid::rangesChanged(GraphRanges ranges) {
-	qDebug() << "grid notified of range change";
+	qDebug() << "grid notified of range change" << ranges;
 	this->ranges = ranges;
+}
+
+void Grid::projectionChanged(OHLCProvider* projection) {
+	(void) projection;
 }
