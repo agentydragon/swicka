@@ -1,28 +1,25 @@
 #include "ohlc_shrinker.h"
 
-OHLCShrinker::OHLCShrinker(OHLCProvider* source, QDateTime minimum, QDateTime maximum, int quantumSeconds) {
+OHLCShrinker::OHLCShrinker(OHLCProvider* source, QDateTime minimum, QDateTime maximum, CandlestickInterval* interval) {
 	this->source = source;
 	this->minimum = minimum;
 	this->maximum = maximum;
-	this->quantumSeconds = quantumSeconds;
+	this->interval = interval;
 }
 
 QDateTime OHLCShrinker::getMinimum() { return minimum; }
 QDateTime OHLCShrinker::getMaximum() { return maximum; }
-int OHLCShrinker::getQuantumSeconds() { return quantumSeconds; }
+CandlestickInterval* OHLCShrinker::getInterval() { return interval; }
 
 bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 	QDateTime now = start;
 	bool someCollected = false;
 
-	for (QDateTime now = start; now < start.addSecs(quantumSeconds); now = now.addSecs(source->getQuantumSeconds())) {
+	for (QDateTime now = interval->lastBefore(start); now < interval->firstAfter(start); now = source->getInterval()->firstAfter(now)) {
 		OHLC tick;
 		if (!source->tryGetData(now, tick)) {
-			// qDebug() << "parent didn't give data for" << now;
 			continue;
 		}
-
-		// qDebug() << "parent gave" << tick << "for" << now;
 		if (!someCollected) {
 			output = tick;
 			someCollected = true;
@@ -31,11 +28,11 @@ bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 		}
 	}
 
-	/*
 	if (!someCollected) {
 		qDebug() << "parent said nothing for" << start;
+	} else {
+		qDebug() << "output: " << output;
 	}
-	*/
 
 	return someCollected;
 }

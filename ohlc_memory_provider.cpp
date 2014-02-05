@@ -1,23 +1,21 @@
 #include "ohlc_memory_provider.h"
 
-OHLCMemoryProvider::OHLCMemoryProvider(QDateTime minimum, QDateTime maximum, int quantumSeconds) {
-	this->minimum = minimum;
-	this->maximum = maximum;
-	this->quantumSeconds = quantumSeconds;
+OHLCMemoryProvider::OHLCMemoryProvider(QDateTime minimum, QDateTime maximum, CandlestickInterval* interval) {
+	this->interval = interval;
+	this->minimum = interval->lastBefore(minimum);
+	this->maximum = interval->firstAfter(maximum);
 
-	data = vector<pair<OHLC, bool> >((maximum.toTime_t() - minimum.toTime_t()) / quantumSeconds + 1, make_pair(OHLC(), false));
+	length = interval->index(minimum, maximum) + 1;
+	data = vector<pair<OHLC, bool> >(length, make_pair(OHLC(), false));
 }
 
 long OHLCMemoryProvider::getTimeIndex(QDateTime time) {
-	long start = getMinimum().toTime_t(), end = getMaximum().toTime_t();
-	long t = time.toTime_t();
-	
-	if (t < start || t > end) {
+	int index = interval->index(minimum, time);
+	if (index < 0 || index > length) {
 		qDebug() << "OHLC memory provider out of range: minimum=" << minimum << "maximum=" << maximum << "t=" << time;
 		throw OHLCProvider::out_of_range();
 	}
-
-	return (t - start) / quantumSeconds;
+	return index;
 }
 
 void OHLCMemoryProvider::addData(QDateTime start, OHLC tick) {
@@ -32,8 +30,8 @@ QDateTime OHLCMemoryProvider::getMaximum() {
 	return maximum;
 }
 
-int OHLCMemoryProvider::getQuantumSeconds() {
-	return quantumSeconds;
+CandlestickInterval* OHLCMemoryProvider::getInterval() {
+	return interval;
 }
 
 bool OHLCMemoryProvider::tryGetData(QDateTime start, OHLC& output) {

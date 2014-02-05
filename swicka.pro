@@ -8,6 +8,7 @@ HEADERS += graph_event_controller.h
 HEADERS += grid_labeler.h
 HEADERS += graph_ranges.h
 HEADERS += x_axis_labeler.h x_axis_year_labeler.h x_axis_month_labeler.h x_axis_day_labeler.h
+HEADERS += candlestick_interval.h
 
 SOURCES += main.cpp
 SOURCES += mainwindow.cpp view.cpp candle.cpp grid.cpp
@@ -18,6 +19,7 @@ SOURCES += graph_event_controller.cpp
 SOURCES += grid_labeler.cpp
 SOURCES += graph_ranges.cpp
 SOURCES += x_axis_year_labeler.cpp x_axis_month_labeler.cpp x_axis_day_labeler.cpp
+SOURCES += candlestick_interval.cpp
 
 QT += widgets xml network
 qtHaveModule(printsupport): QT += printsupport

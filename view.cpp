@@ -254,8 +254,8 @@ void View::redraw() {
 	// QDateTime viewBegin = source->getMinimum();
 	// QDateTime viewEnd = viewBegin;
 
-	int viewAtom = source->getQuantumSeconds();
-	qDebug() << "view start:" << viewBegin << "view end:" << viewEnd << "view atom:" << viewAtom;
+	// int viewAtom = source->getQuantumSeconds();
+	qDebug() << "view start:" << viewBegin << "view end:" << viewEnd; // << "view atom:" << viewAtom;
 
 	GraphRanges ranges;
 	ranges.width = view()->width();
@@ -263,11 +263,16 @@ void View::redraw() {
 	ranges.start = viewBegin;
 	ranges.end = viewEnd;
 
-	OHLCProvider* provider = new OHLCShrinker(source, viewBegin, viewEnd, viewAtom);
-	OHLCStandardizer* standardized = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
+	OHLCProvider* provider = new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
+	// OHLCStandardizer* standardized = new OHLCStandardizer(new OHLCShrinker(source, viewBegin, viewEnd, viewAtom));
+	OHLC closure;
+	if (!OHLC::span(provider, closure)) {
+		qDebug() << "cannot construct closure, probably empty. drawing nothing.";
+		return;
+	}
 
-	float low = standardized->getSourceClosure().low;
-	float high = standardized->getSourceClosure().high;
+	float low = closure.low;
+	float high = closure.high;
 
 	ranges.priceLow = low - (high - low) * (VIEW_MARGIN / 2);
 	ranges.priceHigh = high + (high - low) * (VIEW_MARGIN / 2);
@@ -281,12 +286,15 @@ void View::redraw() {
 	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
 	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
 
-	int quantum = provider->getQuantumSeconds();
+	// int quantum = provider->getQuantumSeconds();
 
-	for (QDateTime start = ranges.start; start < ranges.end; start = start.addSecs(quantum)) {
+	for (QDateTime start = provider->getInterval()->lastBefore(ranges.start);
+			start < provider->getInterval()->firstAfter(ranges.end);
+			start = provider->getInterval()->firstAfter(start)) {
 		OHLC tick;
 		if (provider->tryGetData(start, tick)) {
-			float width = ranges.getTimeSpanWidth(quantum);
+			QDateTime next = provider->getInterval()->firstAfter(start);
+			float width = ranges.getTimeSpanWidth(next.toTime_t() - start.toTime_t());
 			Candle *item = new Candle(start, tick, width, ranges, controller);
 			item->setPos(QPointF(ranges.getTimeX(start), 0));
 			scene->addItem(item);

@@ -37,7 +37,7 @@ void MainWindow::createMenus() {
 }
 
 void MainWindow::loadData() {
-	source = new OHLCMemoryProvider(QDateTime(QDate(1990, 1, 1)), QDateTime(QDate(2009, 12, 22)), 24 * 60 * 60);
+	source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
 	yl = new YahooLoader("ADSK", YahooLoader::DAY, source);
 
 	qDebug() << "Connecting signals";
@@ -50,7 +50,8 @@ void MainWindow::loadData() {
 }
 
 void MainWindow::drawData() {
-	view->changeDataSource(new OHLCShrinker(source, source->getMinimum(), source->getMaximum(), source->getQuantumSeconds() * 7));
+	// view->changeDataSource(new OHLCShrinker(source, source->getMinimum(), source->getMaximum(), new CI::Month));
+	view->changeDataSource(source);
 }
 
 void MainWindow::loadYahooStock() {

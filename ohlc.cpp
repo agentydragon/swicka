@@ -1,6 +1,7 @@
 #include <cmath>
 #include <QDebug>
 #include "ohlc.h"
+#include "ohlc_provider.h"
 
 using namespace std;
 
@@ -28,4 +29,28 @@ void OHLC::standardizeTo(OHLC general) {
 QDebug operator<< (QDebug d, const OHLC &ohlc) {
 	d << "[O:" << ohlc.open << "H:" << ohlc.high << "L:" << ohlc.low << "C:" << ohlc.close << "]";
     return d;
+}
+
+bool OHLC::span(OHLCProvider* provider, OHLC& result) {
+	bool sourceEmpty = true;
+	OHLC sourceClosure;
+	for (QDateTime start = provider->getMinimum();
+			start < provider->getMaximum();
+			start = provider->getInterval()->firstAfter(start)) {
+		OHLC tick;
+
+		if (!provider->tryGetData(start, tick)) continue;
+		if (sourceEmpty) {
+			sourceClosure = tick;
+			sourceEmpty = false;
+		} else {
+			sourceClosure << tick;
+		}
+	}
+	if (!sourceEmpty) {
+		result = sourceClosure;
+		return true;
+	} else {
+		return false;
+	}
 }

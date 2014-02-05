@@ -14,7 +14,7 @@ class OHLCStandardizer: public OHLCProvider {
 		OHLCStandardizer(OHLCProvider* source);
 		virtual QDateTime getMinimum();
 		virtual QDateTime getMaximum();
-		virtual int getQuantumSeconds();
+		virtual CandlestickInterval* getInterval();
 		virtual bool tryGetData(QDateTime start, OHLC& output);
 
 		// TODO: iterator
