@@ -6,7 +6,9 @@
 class QGraphicsScene;
 class OHLCProvider;
 
-class GraphOverlay {
+class GraphOverlay: public QObject {
+	Q_OBJECT
+
 	public:
 		virtual void insertIntoScene(QGraphicsScene* scene) = 0;
 		virtual ~GraphOverlay() {}

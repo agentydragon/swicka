@@ -8,6 +8,8 @@
 class GraphViewport;
 
 class Grid: public GraphOverlay {
+	Q_OBJECT
+
 	private:
 		GraphViewport* viewport;
 		GraphRanges ranges;

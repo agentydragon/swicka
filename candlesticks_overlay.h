@@ -2,13 +2,17 @@
 #define CANDLESTICKS_OVERLAY_H_INCLUDED
 
 #include "graph_overlay.h"
+#include "graph_event_controller.h"
 #include <QList>
 
 class GraphViewport;
 class Candle;
 
 class CandlesticksOverlay: public GraphOverlay {
+	Q_OBJECT
+
 	private:
+		GraphEventController controller;
 		GraphViewport* viewport;
 		GraphRanges ranges;
 		OHLCProvider* projection;
@@ -24,6 +28,12 @@ class CandlesticksOverlay: public GraphOverlay {
 		CandlesticksOverlay(GraphViewport* viewport);
 		virtual void insertIntoScene(QGraphicsScene* scene);
 		virtual ~CandlesticksOverlay();
+	private slots:
+		void slotCandleEntered(QDateTime start);
+		void slotCandleLeft();
+	signals:
+		void candleEntered(QDateTime start);
+		void candleLeft();
 };
 
 #endif

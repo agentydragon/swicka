@@ -24,7 +24,6 @@ void CandlesticksOverlay::destroy() {
 	candles.clear(); // TODO: and delete them all...
 	assert(candles.size() == 0);
 	qDebug() << "Candles destroyed.";
-	// TODO: controller...
 	//
 	// It's absolutely unneeded to delete those candles.
 	// The scene takes ownership of its items.
@@ -35,11 +34,8 @@ void CandlesticksOverlay::rebuild() {
 
 	qDebug() << "Rebuilding candles...";
 
-	GraphEventController* controller = new GraphEventController();
-	/*
-	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
-	connect(controller, SIGNAL(candleLeft()), this, SLOT(candleLeft()));
-	*/
+	connect(&controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(slotCandleEntered(QDateTime)));
+	connect(&controller, SIGNAL(candleLeft()), this, SLOT(slotCandleLeft()));
 
 	for (QDateTime start = projection->getMinimum();
 			start < projection->getMaximum();
@@ -48,7 +44,7 @@ void CandlesticksOverlay::rebuild() {
 		if (projection->tryGetData(start, tick)) {
 			QDateTime next = projection->getInterval()->firstAfter(start);
 
-			Candle *candle = new Candle(start, next, tick, ranges, controller);
+			Candle *candle = new Candle(start, next, tick, ranges, &controller);
 			candle->setPos(QPointF(ranges.getTimeX(start), 0));
 
 			candles.push_back(candle);
@@ -77,4 +73,12 @@ void CandlesticksOverlay::insertIntoScene(QGraphicsScene* scene) {
 		nitems++;
 	}
 	qDebug() << "Rendered" << nitems << "candlesticks";
+}
+
+void CandlesticksOverlay::slotCandleEntered(QDateTime start) {
+	emit candleEntered(start);
+}
+
+void CandlesticksOverlay::slotCandleLeft() {
+	emit candleLeft();
 }

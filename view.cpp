@@ -4,8 +4,6 @@
 #include "ohlc_shrinker.h"
 #include "ohlc_random_generator.h"
 
-#include "graph_event_controller.h"
-
 #include "graph_overlay.h"
 #include "grid.h"
 #include "candlesticks_overlay.h"
@@ -148,10 +146,14 @@ void View::resetView() {
 		connect(viewport, SIGNAL(changed()), this, SLOT(redraw()));
 
 		overlays.clear();
+
 		GraphOverlay* grid = new Grid(viewport);
 		overlays.push_back(grid);
+
 		GraphOverlay* candlesticks = new CandlesticksOverlay(viewport);
 		overlays.push_back(candlesticks);
+		connect(candlesticks, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
+		connect(candlesticks, SIGNAL(candleLeft), this, SLOT(candleLeft));
 
 		notifyOverlaysRangesChanged();
 		notifyOverlaysProjectionChanged();
