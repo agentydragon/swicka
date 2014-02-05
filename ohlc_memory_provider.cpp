@@ -14,7 +14,7 @@ long OHLCMemoryProvider::getTimeIndex(QDateTime time) {
 	
 	if (t < start || t > end) {
 		qDebug() << "OHLC memory provider out of range: minimum=" << minimum << "maximum=" << maximum << "t=" << time;
-		throw "out of range";
+		throw OHLCProvider::out_of_range();
 	}
 
 	return (t - start) / quantumSeconds;
@@ -37,7 +37,12 @@ int OHLCMemoryProvider::getQuantumSeconds() {
 }
 
 bool OHLCMemoryProvider::tryGetData(QDateTime start, OHLC& output) {
-	pair<OHLC, bool> tick = data[getTimeIndex(start)];
-	output = tick.first;
-	return tick.second;
+	try {
+		pair<OHLC, bool> tick = data[getTimeIndex(start)];
+		output = tick.first;
+		return tick.second;
+	} catch (OHLCProvider::out_of_range&) {
+		qDebug() << "get data for start=" << start << "failed: out of range";
+		return false;
+	}
 }

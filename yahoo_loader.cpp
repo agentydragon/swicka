@@ -43,7 +43,7 @@ QUrl YahooLoader::buildUrl(QString symbol, QDateTime start, QDateTime end, Perio
 	url.setScheme("https");
 	url.setHost("ichart.yahoo.com");
 	url.setPath("/table.csv");
-	
+
 	QList<QPair<QString, QString> > query;
 	query.push_back(QPair<QString, QString>("s", symbol));
 

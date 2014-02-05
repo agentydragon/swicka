@@ -4,6 +4,8 @@
 #include <QSplitter>
 #include <QStatusBar>
 
+#include "ohlc_shrinker.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	view = new View("Top left view");
 
@@ -48,7 +50,7 @@ void MainWindow::loadData() {
 }
 
 void MainWindow::drawData() {
-	view->changeDataSource(source);
+	view->changeDataSource(new OHLCShrinker(source, source->getMinimum(), source->getMaximum(), source->getQuantumSeconds() * 7));
 }
 
 void MainWindow::loadYahooStock() {

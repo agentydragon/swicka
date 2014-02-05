@@ -28,7 +28,7 @@ float GridLabeler::generateYLabelStep(float min, float max) {
 		}
 		ticks = ceil(difference / (base * multiplier));
 
-		qDebug() << "mult=" << multiplier << "base=" << base;
+		// qDebug() << "mult=" << multiplier << "base=" << base;
 	}
 
 	while (ticks < labelsLeast) {
@@ -39,20 +39,20 @@ float GridLabeler::generateYLabelStep(float min, float max) {
 		}
 		ticks = ceil(difference / (base * multiplier));
 
-		qDebug() << "mult=" << multiplier << "base=" << base;
+		// qDebug() << "mult=" << multiplier << "base=" << base;
 	}
 
 	return multiplier * base;
 }
 
 void GridLabeler::generateYLabels(float min, float max, QList<QPair<float, QString> > &labels) {
-	qDebug() << "generating Y labels: min=" << min << "max=" << max;
+	// qDebug() << "generating Y labels: min=" << min << "max=" << max;
 	if (min == max) {
-		qDebug() << "empty range";
+		// qDebug() << "empty range";
 		return;
 	}
 	float step = generateYLabelStep(min, max);
-	
+
 	labels.clear();
 	for (float a = floor(min / step) * step; a < max; a += step) {
 		if (a >= min) {

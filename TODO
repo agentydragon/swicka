@@ -1,5 +1,11 @@
 TODO:
-	- meneni mista, ktere vidim
+	- reprezentace intervalu svicek: musim svicky vykreslovat od pevneho referencniho bodu.
+		- denni svicky: 00:00
+		- tydenni svicky: zacatek tydne (pondeli)
+		- mesicni svicky: zacatek mesice
+		- etc.
+
+TODO:
 	- hezci popisky u os (datum)
 	- padding okolo os
 

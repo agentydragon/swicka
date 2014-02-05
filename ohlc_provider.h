@@ -6,6 +6,8 @@
 
 class OHLCProvider {
 	public:
+		class out_of_range: std::exception {};
+
 		virtual QDateTime getMinimum() = 0;
 		virtual QDateTime getMaximum() = 0;
 		virtual int getQuantumSeconds() = 0;
