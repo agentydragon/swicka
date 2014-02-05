@@ -65,16 +65,7 @@ void MainWindow::loadYahooStock() {
 	QString text = QInputDialog::getText(this, tr("Zadej symbol"), tr("Symbol:"), QLineEdit::Normal, "ADSK", &ok);
 	if (ok) {
 		if (text.size() > 0) {
-			source = new OHLCMemoryProvider(QDateTime(QDate(2008, 1, 1)), QDateTime(QDate(2009, 12, 22)), new CI::Day);// Day);
-			yl = new YahooLoader(text, YahooLoader::DAY, source);
-
-			qDebug() << "Connecting signals";
-			connect(yl, SIGNAL(dataLoaded()), this, SLOT(drawData()));
-
-			qDebug() << "Starting to load data";
-			yl->load();
-
-			qDebug() << "Data started to load";
+			doLoadYahooStock(text);
 		} else {
 			qDebug() << "nic nezadano...";
 		}

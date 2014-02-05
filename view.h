@@ -10,6 +10,7 @@
 class QLabel;
 class QSlider;
 class QToolButton;
+class GraphOverlay;
 
 class View;
 
@@ -48,11 +49,10 @@ class View : public QFrame {
 		void candleLeft();
 
 	private:
+		QList<GraphOverlay*> overlays;
+
 		GraphRanges getRanges();
 		GraphViewport *viewport;
-		// QDateTime viewBegin, viewEnd;
-		// int viewAtom;
-		// double zoomLevel;
 
 		OHLCProvider* source;
 
@@ -68,6 +68,8 @@ class View : public QFrame {
 		QToolButton *printButton;
 		QToolButton *resetButton;
 		// QSlider *zoomSlider;
+	private slots:
+		void notifyOverlays();
 };
 
 #endif // VIEW_H

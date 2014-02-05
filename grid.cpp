@@ -1,7 +1,7 @@
 #include "grid.h"
 #include "grid_labeler.h"
 
-Grid::Grid(GraphRanges ranges) {
+Grid::GridGraphics::GridGraphics(GraphRanges ranges) {
 	this->ranges = ranges;
 
 	// TODO fuj
@@ -9,7 +9,7 @@ Grid::Grid(GraphRanges ranges) {
 	GridLabeler().generateXLabels(ranges.start, ranges.end, xlabels);
 }
 
-void Grid::paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) {
+void Grid::GridGraphics::paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) {
 	Q_UNUSED(widget);
 	Q_UNUSED(item);
 
@@ -36,12 +36,27 @@ void Grid::paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidge
 	}
 }
 
-QRectF Grid::boundingRect() const {
+QRectF Grid::GridGraphics::boundingRect() const {
 	return QRectF(0, 0, ranges.width, ranges.height);
 }
 
-QPainterPath Grid::shape() const {
+QPainterPath Grid::GridGraphics::shape() const {
 	QPainterPath path;
 	path.addRect(0, 0, ranges.width, ranges.height);
 	return path;
+}
+
+Grid::Grid(GraphViewport* viewport, GraphRanges ranges) {
+	this->viewport = viewport;
+	this->ranges = ranges;
+}
+
+void Grid::insertIntoScene(QGraphicsScene* scene) {
+	scene->addItem(new GridGraphics(ranges));
+	// TODO: reuse
+}
+
+void Grid::rangesChanged(GraphRanges ranges) {
+	qDebug() << "grid notified of range change";
+	this->ranges = ranges;
 }

@@ -7,6 +7,7 @@
 #include "graph_event_controller.h"
 
 #include "candle.h"
+#include "graph_overlay.h"
 #include "grid.h"
 
 #ifndef QT_NO_PRINTER
@@ -120,6 +121,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	resetView();
 
+	connect(view(), SIGNAL(resized()), this, SLOT(notifyOverlays()));
 	connect(view(), SIGNAL(resized()), this, SLOT(redraw()));
 }
 
@@ -138,8 +140,14 @@ QGraphicsView *View::view() const {
 
 void View::resetView() {
 	if (source) {
-		viewport = new GraphViewport(source);
+		// margin: 0.5
+		viewport = new GraphViewport(source, 0.5f);
+		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlays()));
 		connect(viewport, SIGNAL(changed()), this, SLOT(redraw()));
+
+		overlays.clear();
+		GraphOverlay* grid = new Grid(viewport, getRanges());
+		overlays.push_back(grid);
 
 		setupMatrix();
 		graphicsView->ensureVisible(QRectF(0, 0, 0, 0));
@@ -185,7 +193,7 @@ void View::print() {
 
 GraphRanges View::getRanges() {
 	assert(viewport);
-	GraphRanges ranges = viewport->getInherentRanges(0.2f);
+	GraphRanges ranges = viewport->getRanges();
 	ranges.width = view()->width();
 	ranges.height = view()->height();
 	return ranges;
@@ -198,8 +206,6 @@ void View::zoom(int level, int x) {
 		qDebug() << "no viewport, doing nothing";
 	}
 }
-
-const float VIEW_MARGIN = 0.2;
 
 void View::redraw() {
 	if (!source || !viewport) {
@@ -220,8 +226,11 @@ void View::redraw() {
 		qDebug() << "drawing empty projection, doing nothing.";
 	}
 
+	for (GraphOverlay* overlay: overlays) {
+		overlay->insertIntoScene(scene);
+	}
+
 	GraphRanges ranges = getRanges();
-	scene->addItem(new Grid(ranges));
 
 	// Populate scene
 	int nitems = 0;
@@ -253,4 +262,14 @@ void View::redraw() {
 void View::changeDataSource(OHLCProvider* source) {
 	this->source = source;
 	resetView();
+}
+
+void View::notifyOverlays() {
+	if (viewport) {
+		qDebug() << "notifying overlays of range change";
+		GraphRanges ranges = getRanges();
+		for (GraphOverlay* overlay: overlays) {
+			overlay->rangesChanged(ranges);
+		}
+	}
 }

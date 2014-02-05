@@ -17,18 +17,19 @@ class GraphViewport: public QObject {
 		void changed();
 
 	private:
+		float viewMargin;
 		double zoomLevel;
 		QDateTime viewBegin, viewEnd;
 		OHLCProvider* source;
 
 	public:
-		GraphViewport(OHLCProvider* source);
+		GraphViewport(OHLCProvider* source, float viewMargin);
 		QDateTime getViewBegin();
 		QDateTime getViewEnd();
 
 		OHLCProvider* getSourceProjection();
 
-		GraphRanges getInherentRanges(float viewMargin = 0.0f);
+		GraphRanges getRanges();
 };
 
 #endif

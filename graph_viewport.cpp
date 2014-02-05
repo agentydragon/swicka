@@ -4,8 +4,9 @@
 
 #include <assert.h>
 
-GraphViewport::GraphViewport(OHLCProvider* source) {
+GraphViewport::GraphViewport(OHLCProvider* source, float viewMargin) {
 	this->source = source;
+	this->viewMargin = viewMargin;
 
 	assert(source);
 
@@ -64,7 +65,7 @@ OHLCProvider* GraphViewport::getSourceProjection() {
 	return new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
 }
 
-GraphRanges GraphViewport::getInherentRanges(float viewMargin) {
+GraphRanges GraphViewport::getRanges() {
 	GraphRanges ranges;
 	ranges.start = viewBegin;
 	ranges.end = viewEnd;

@@ -27,12 +27,12 @@ int CI::Day::index(QDateTime start, QDateTime end) {
 		days += i.date().daysInMonth();
 		i = i.addMonths(1);
 
-		//qDebug() << "*" << i << " #" << days;
+		// qDebug() << "*" << i << " #" << days;
 	}
 
 	for (; i < firstAfter(end); i = firstAfter(i), days++) {
-		//qDebug() << "*" << i << " #" << days;
+		// qDebug() << "*" << i << " #" << days;
 	}
-	qDebug() << "->" << days;
+	// qDebug() << "->" << days;
 	return days;
 }
