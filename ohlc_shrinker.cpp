@@ -12,7 +12,6 @@ QDateTime OHLCShrinker::getMaximum() { return maximum; }
 CandlestickInterval* OHLCShrinker::getInterval() { return interval; }
 
 bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
-	QDateTime now = start;
 	bool someCollected = false;
 
 	for (QDateTime now = interval->lastBefore(start); now < interval->firstAfter(start); now = source->getInterval()->firstAfter(now)) {
@@ -28,10 +27,9 @@ bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 		}
 	}
 
-	/*
 	if (!someCollected) {
 		qDebug() << "parent said nothing for" << start;
-	} else {
+	}/* else {
 		qDebug() << "output: " << output;
 	}
 	*/

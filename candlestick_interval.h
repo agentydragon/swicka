@@ -10,6 +10,7 @@ class CandlestickInterval {
 		virtual QDateTime firstAfter(QDateTime x) = 0;
 
 		virtual int index(QDateTime start, QDateTime end);
+		virtual QDateTime minus(QDateTime x, int n);
 };
 
 namespace CI {

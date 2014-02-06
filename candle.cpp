@@ -67,30 +67,6 @@ void Candle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 		painter->setPen(QPen(Qt::gray, strokeWidth));
 		painter->drawRect(rect);
 	}
-
-	/*
-	   if (lod >= 1) {
-	   painter->setPen(QPen(Qt::gray, 1));
-	   painter->drawLine(94, 53, 94, 15);
-	   painter->setPen(QPen(Qt::black, 0));
-	   }
-
-	// Draw lines
-	QVarLengthArray<QLineF, 36> lines;
-	if (lod >= 0.5) {
-	for (int i = 0; i <= 6; i += (lod > 0.5 ? 1 : 2)) {
-	lines.append(QLineF(5, 18 + i * 5, 13, 18 + i * 5));
-	lines.append(QLineF(94, 18 + i * 5, 102, 18 + i * 5));
-	}
-	}
-	if (lod >= 0.4) {
-	const QLineF lineData[] = {
-	QLineF(45, 35, 55, 35)
-	};
-	lines.append(lineData, 6);
-	}
-	painter->drawLines(lines.data(), lines.size());
-	*/
 }
 
 void Candle::setRanges(GraphRanges ranges) {

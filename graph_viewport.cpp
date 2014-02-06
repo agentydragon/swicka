@@ -13,6 +13,19 @@ GraphViewport::GraphViewport(OHLCProvider* source, float viewMargin) {
 	zoomLevel = 0.0;
 	viewBegin = source->getMinimum();
 	viewEnd = source->getMaximum();
+
+	projection = NULL;
+	resetProjection();
+}
+
+GraphViewport::~GraphViewport() {
+	if (projection) {
+		delete projection;
+	}
+}
+
+void GraphViewport::resetProjection() {
+	projection = new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
 }
 
 void GraphViewport::zoom(int delta, QDateTime center) {
@@ -48,6 +61,7 @@ void GraphViewport::zoom(int delta, QDateTime center) {
 		viewEnd = newEnd;
 		qDebug() << "new view begin=" << viewBegin << "end=" << viewEnd;
 		zoomLevel = zoomAfter;
+		resetProjection();
 		emit changed();
 	}
 }
@@ -62,7 +76,7 @@ QDateTime GraphViewport::getViewEnd() {
 
 OHLCProvider* GraphViewport::getSourceProjection() {
 	// TODO: shrink to smaller interval...?
-	return new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
+	return projection;
 }
 
 GraphRanges GraphViewport::getRanges() {

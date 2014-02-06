@@ -7,6 +7,7 @@
 #include "graph_overlay.h"
 #include "grid.h"
 #include "candlesticks_overlay.h"
+#include "bollinger_overlay.h"
 
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
@@ -149,6 +150,9 @@ void View::resetView() {
 
 		GraphOverlay* grid = new Grid(viewport);
 		overlays.push_back(grid);
+
+		GraphOverlay* bollinger = new BollingerOverlay(viewport);
+		overlays.push_back(bollinger);
 
 		GraphOverlay* candlesticks = new CandlesticksOverlay(viewport);
 		overlays.push_back(candlesticks);

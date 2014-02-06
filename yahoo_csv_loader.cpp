@@ -15,7 +15,8 @@ YahooCSVLoader::YahooCSVLoader(QIODevice* source, OHLCMemoryProvider* storage) {
 }
 
 void YahooCSVLoader::load() {
-	CSVReader reader(new QTextStream(source));
+	QTextStream stream(source);
+	CSVReader reader(&stream);
 	reader.loadNextLine();
 	assert(reader.getField(0) == "Date");
 

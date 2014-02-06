@@ -1,6 +1,8 @@
 #ifndef CANDLESTICKS_OVERLAY_H_INCLUDED
 #define CANDLESTICKS_OVERLAY_H_INCLUDED
 
+// TODO: scena by se nemela sama od sebe cela rozbijet, ne?
+
 #include "graph_overlay.h"
 #include "graph_event_controller.h"
 #include <QList>

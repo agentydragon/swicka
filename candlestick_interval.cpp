@@ -3,6 +3,16 @@
 
 // TODO: optimize this, this gives quadratic complexity...
 
+QDateTime CandlestickInterval::minus(QDateTime x, int n) {
+	while (n--) {
+		QDateTime y = lastBefore(x);
+		// XXX HACK: lastBefore returns interval start...
+		if (x == y) y = y.addSecs(-1);
+		x = y;
+	}
+	return x;
+}
+
 int CandlestickInterval::index(QDateTime start, QDateTime end) {
 	int j = 0;
 	qDebug() << "index" << end << "before" << start;

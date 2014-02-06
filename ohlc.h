@@ -16,6 +16,9 @@ struct OHLC {
 		void standardizeTo(OHLC general);
 
 		static bool span(OHLCProvider* provider, OHLC& result);
+
+		// XXX: bad...
+		explicit operator float();
 };
 
 QDebug operator<< (QDebug d, const OHLC &ohlc);

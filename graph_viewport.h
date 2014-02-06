@@ -21,9 +21,13 @@ class GraphViewport: public QObject {
 		double zoomLevel;
 		QDateTime viewBegin, viewEnd;
 		OHLCProvider* source;
+		OHLCProvider* projection;
+
+		void resetProjection();
 
 	public:
 		GraphViewport(OHLCProvider* source, float viewMargin);
+		virtual ~GraphViewport();
 		QDateTime getViewBegin();
 		QDateTime getViewEnd();
 
