@@ -1,81 +1,54 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <QGraphicsView>
-
 #include "ohlc_provider.h"
 #include "graph_ranges.h"
 #include "graph_viewport.h"
+#include "graph_view.h"
 
+class QGraphicsScene;
 class QLabel;
 class QSlider;
 class QToolButton;
 class GraphOverlay;
 
-class View;
-
-class GraphicsView : public QGraphicsView {
-	Q_OBJECT
-	public:
-		GraphicsView(View *v);
-	protected:
-		void mouseMoveEvent(QMouseEvent *);
-		void wheelEvent(QWheelEvent *);
-		void resizeEvent(QResizeEvent *);
-	private:
-		View *view;
-	signals:
-		void resized();
-};
-
 class View : public QFrame {
 	Q_OBJECT
 	public:
 		explicit View(const QString &name, QWidget *parent = 0);
-		QGraphicsView *view() const;
+		QGraphicsScene* getMainScene();
+	private slots:
+		void graphViewDataPointHovered(QDateTime time, float price);
+		void zoom(QDateTime time, int delta);
+	signals:
+		void dataPointHovered(QDateTime time, float price);
 
 	public slots:
-		void zoom(int level = 1, int x = -1);
+		// void zoom(int level = 1, int x = -1);
 		void changeDataSource(OHLCProvider* source);
-		void redraw();
 		void resetView(); // reset to default view
 
-	private slots:
-		void setupMatrix();
-		void togglePointerMode();
-		void toggleOpenGL();
-		void toggleAntialiasing();
-		void candleEntered(QDateTime start);
-		void candleLeft();
+	// private slots:
+		// void togglePointerMode();
+		// void toggleOpenGL();
+		// void toggleAntialiasing();
 
 	private:
-		QList<GraphOverlay*> overlays;
-
 		GraphRanges getRanges();
 		GraphViewport *viewport;
 
 		OHLCProvider* source;
 
-		QGraphicsScene *scene;
-
-		QGraphicsView *graphicsView;
+		GraphView *graphicsView;
 		QLabel *label;
 		QLabel *label2;
-		QToolButton *selectModeButton;
-		QToolButton *dragModeButton;
-		QToolButton *openGlButton;
-		QToolButton *antialiasButton;
+		//QToolButton *selectModeButton;
+		//QToolButton *dragModeButton;
+		//QToolButton *openGlButton;
+		//QToolButton *antialiasButton;
 		QToolButton *resetButton;
-	private slots:
-		void notifyOverlaysProjectionChanged();
-		void notifyOverlaysRangesChanged();
-	public slots:
-		void viewMouseMoved(int x, int y);
-	signals:
-		void graphPointHover(QDateTime time, float price);
 	public:
 		int getViewportWidth(); int getViewportHeight();
-		QGraphicsScene* getScene();
 };
 
 #endif // VIEW_H

@@ -12,7 +12,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	view = new View("Top left view");
 	view->setParent(this);
-	connect(view, SIGNAL(graphPointHover(QDateTime, float)), this, SLOT(graphPointHover(QDateTime, float)));
+	connect(view, SIGNAL(dataPointHovered(QDateTime, float)), this, SLOT(dataPointHovered(QDateTime, float)));
 
 	setCentralWidget(view);
 	setWindowTitle(tr("TODO titulek"));
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	// doLoadYahooStock("GOOG");
 }
 
-void MainWindow::graphPointHover(QDateTime time, float price) {
+void MainWindow::dataPointHovered(QDateTime time, float price) {
 	QString str = time.toString() + " " + QString::number(price);
 	statusBar()->showMessage(str);
 }
@@ -65,7 +65,7 @@ void MainWindow::exportImage() {
 
 	QPainter painter(&image);
 	painter.setRenderHint(QPainter::Antialiasing);
-	view->getScene()->render(&painter);
+	view->getMainScene()->render(&painter);
 	image.save(filename);
 }
 

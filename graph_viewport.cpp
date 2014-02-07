@@ -10,11 +10,14 @@ GraphViewport::GraphViewport(OHLCProvider* source, float viewMargin) {
 
 	assert(source);
 
+	projection = NULL;
+	reset();
+}
+
+void GraphViewport::reset() {
 	zoomLevel = 0.0;
 	viewBegin = source->getMinimum();
 	viewEnd = source->getMaximum();
-
-	projection = NULL;
 	resetProjection();
 }
 

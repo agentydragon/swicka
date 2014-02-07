@@ -33,6 +33,7 @@ class GraphViewport: public QObject {
 		OHLCProvider* getSourceProjection();
 
 		GraphRanges getRanges();
+		void reset();
 };
 
 #endif
