@@ -5,6 +5,7 @@
 #include <QStatusBar>
 #include <QLineEdit>
 #include <QInputDialog>
+#include <QFileDialog>
 
 #include "ohlc_shrinker.h"
 
@@ -31,13 +32,35 @@ void MainWindow::createActions() {
 
 	loadYahooStockAction = new QAction(tr("Nahrat akcie z Yahoo"), this);
 	connect(loadYahooStockAction, SIGNAL(triggered()), this, SLOT(loadYahooStock()));
+
+	exportImageAction = new QAction(tr("Exportovat obrazek"), this);
+	connect(exportImageAction, SIGNAL(triggered()), this, SLOT(exportImage()));
 }
 
 void MainWindow::createMenus() {
 	fileMenu = menuBar()->addMenu(tr("Soubor"));
 	fileMenu->addAction(loadYahooStockAction);
+	fileMenu->addAction(exportImageAction);
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
+}
+
+void MainWindow::exportImage() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Exportovat obrázek"), "image.png", tr("Obrázky (*.png *.gif *.bmp)"));
+	if (filename.isNull()) {
+		qDebug() << "no file entered";
+		return;
+	}
+
+	// TODO: scene must exist
+
+	QImage image(view->getViewportWidth(), view->getViewportHeight(), QImage::Format_RGB16);
+	image.fill(Qt::white);
+
+	QPainter painter(&image);
+	painter.setRenderHint(QPainter::Antialiasing);
+	view->getScene()->render(&painter);
+	image.save(filename);
 }
 
 void MainWindow::doLoadYahooStock(QString symbol) {

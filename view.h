@@ -44,7 +44,6 @@ class View : public QFrame {
 		void togglePointerMode();
 		void toggleOpenGL();
 		void toggleAntialiasing();
-		void print();
 		void candleEntered(QDateTime start);
 		void candleLeft();
 
@@ -66,10 +65,12 @@ class View : public QFrame {
 		QToolButton *openGlButton;
 		QToolButton *antialiasButton;
 		QToolButton *resetButton;
-		// QSlider *zoomSlider;
 	private slots:
 		void notifyOverlaysProjectionChanged();
 		void notifyOverlaysRangesChanged();
+	public:
+		int getViewportWidth(); int getViewportHeight();
+		QGraphicsScene* getScene();
 };
 
 #endif // VIEW_H

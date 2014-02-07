@@ -82,9 +82,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 #else
 	openGlButton->setEnabled(false);
 #endif
-	QToolButton* printButton = new QToolButton;
-	// printButton->setIcon(QIcon(QPixmap(":/fileprint.png")));
-
 	QButtonGroup *pointerModeGroup = new QButtonGroup(this);
 	pointerModeGroup->setExclusive(true);
 	pointerModeGroup->addButton(selectModeButton);
@@ -98,7 +95,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	labelLayout->addStretch();
 	labelLayout->addWidget(antialiasButton);
 	labelLayout->addWidget(openGlButton);
-	labelLayout->addWidget(printButton);
 
 	QGridLayout *topLayout = new QGridLayout;
 	topLayout->addLayout(labelLayout, 0, 0);
@@ -114,7 +110,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
 	// connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoom()));
 	// connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
-	connect(printButton, SIGNAL(clicked()), this, SLOT(print()));
 
 	scene = new QGraphicsScene;
 	view()->setScene(scene);
@@ -137,6 +132,10 @@ void View::candleLeft() {
 
 QGraphicsView *View::view() const {
 	return static_cast<QGraphicsView *>(graphicsView);
+}
+
+QGraphicsScene* View::getScene() {
+	return scene;
 }
 
 void View::resetView() {
@@ -194,17 +193,6 @@ void View::toggleOpenGL() {
 
 void View::toggleAntialiasing() {
 	graphicsView->setRenderHint(QPainter::Antialiasing, antialiasButton->isChecked());
-}
-
-void View::print() {
-#if !defined(QT_NO_PRINTER) && !defined(QT_NO_PRINTDIALOG)
-	QPrinter printer;
-	QPrintDialog dialog(&printer, this);
-	if (dialog.exec() == QDialog::Accepted) {
-		QPainter painter(&printer);
-		graphicsView->render(&painter);
-	}
-#endif
 }
 
 GraphRanges View::getRanges() {
@@ -277,3 +265,6 @@ void View::notifyOverlaysRangesChanged() {
 		}
 	}
 }
+
+int View::getViewportWidth() { return view()->width(); }
+int View::getViewportHeight() { return view()->height(); }

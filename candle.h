@@ -15,6 +15,13 @@ class Candle : public QGraphicsItem {
 
 		QRectF boundingRect() const;
 		QPainterPath shape() const;
+
+	private:
+		void paintHighLow(QPainter *painter);
+		void paintOpenClose(QPainter *painter);
+		QRectF getOpenCloseRect();
+
+	public:
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 
 	private:

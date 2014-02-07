@@ -40,7 +40,7 @@ void BollingerOverlay::insertIntoScene(QGraphicsScene* scene) {
 		if (projection->tryGetData(i, tick)) {
 			gotSomething = true; // to skip empty days
 		} else {
-			qDebug() << i << ": got nothing for bollinger calculator";
+			// qDebug() << i << ": got nothing for bollinger calculator";
 		}
 
 		if (gotSomething) {

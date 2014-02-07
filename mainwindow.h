@@ -32,9 +32,11 @@ class MainWindow : public QMainWindow {
 		QMenu* fileMenu;
 		QAction* exitAction;
 		QAction* loadYahooStockAction;
+		QAction* exportImageAction;
 
 	private slots:
 		void loadYahooStock();
+		void exportImage();
 
 	public slots:
 		void drawData();
