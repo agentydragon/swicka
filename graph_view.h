@@ -11,7 +11,10 @@ class GraphView: public AbstractGraphView {
 	public:
 		GraphView();
 
+	private:
+		GraphViewport* m_viewport;
 	protected:
+		virtual GraphViewport* viewport();
 		virtual void internalizeViewport(GraphViewport* viewport);
 		virtual void addOverlays();
 

@@ -11,7 +11,11 @@ class RSIGraphView: public AbstractGraphView {
 	public:
 		RSIGraphView();
 
+	private:
+		GraphViewport* m_viewport;
+
 	protected:
+		virtual GraphViewport* viewport();
 		virtual void internalizeViewport(GraphViewport* viewport);
 		virtual void addOverlays();
 };

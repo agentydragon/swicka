@@ -13,7 +13,6 @@ struct BollingerEntry {
 class BollingerCalculator {
 	public:
 		BollingerCalculator(int N = 20, int K = 2);
-		// TODO: which one do I insert there...?
 		void operator<<(OHLC datapoint);
 		bool get(BollingerEntry& output);
 	private:

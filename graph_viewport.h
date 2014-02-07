@@ -16,6 +16,10 @@ class GraphViewport: public QObject {
 	signals:
 		void changed();
 
+	public:
+		bool explicitYLimits;
+		float yLow, yHigh;
+
 	private:
 		float viewMargin;
 		double zoomLevel;
@@ -27,6 +31,7 @@ class GraphViewport: public QObject {
 
 	public:
 		GraphViewport(OHLCProvider* source, float viewMargin);
+		GraphViewport* duplicate();
 		QDateTime getViewBegin();
 		QDateTime getViewEnd();
 

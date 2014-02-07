@@ -7,13 +7,23 @@
 #include <assert.h>
 
 RSIGraphView::RSIGraphView() {
-	viewport = NULL;
+	m_viewport = NULL;
+}
+
+GraphViewport* RSIGraphView::viewport() {
+	if (m_viewport) {
+		GraphViewport* v = m_viewport->duplicate();
+		v->explicitYLimits = true;
+		v->yLow = 0;
+		v->yHigh = 100;
+		return v; // TODO: cache it!
+	} else return NULL;
 }
 
 void RSIGraphView::internalizeViewport(GraphViewport* viewport) {
 	qDebug() << "Internalizing new viewport";
 	// TODO: internalize in some other way...
-	this->viewport = viewport;
+	m_viewport = viewport;
 
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysRangesChanged()));
@@ -22,5 +32,5 @@ void RSIGraphView::internalizeViewport(GraphViewport* viewport) {
 
 void RSIGraphView::addOverlays() {
 	qDebug() << "Adding overlays";
-	overlays.push_back(new RSIOverlay(viewport));
+	overlays.push_back(new RSIOverlay(viewport()));
 }

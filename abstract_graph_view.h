@@ -22,7 +22,7 @@ class AbstractGraphView: public QGraphicsView {
 		GraphRanges getRanges();
 
 	protected:
-		GraphViewport* viewport;
+		virtual GraphViewport* viewport() = 0;
 		virtual void internalizeViewport(GraphViewport* viewport) = 0;
 		virtual void addOverlays() = 0;
 

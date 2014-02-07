@@ -11,7 +11,7 @@ HEADERS += x_axis_labeler.h x_axis_year_labeler.h x_axis_month_labeler.h x_axis_
 HEADERS += candlestick_interval.h graph_viewport.h
 HEADERS += graph_overlay.h candlesticks_overlay.h
 HEADERS += bollinger_overlay.h bollinger_calculator.h
-HEADERS += rsi_overlay.h
+HEADERS += rsi_overlay.h rsi_calculator.h
 HEADERS += abstract_graph_view.h graph_view.h rsi_graph_view.h
 
 SOURCES += main.cpp
@@ -26,7 +26,7 @@ SOURCES += x_axis_year_labeler.cpp x_axis_month_labeler.cpp x_axis_day_labeler.c
 SOURCES += candlestick_interval.cpp graph_viewport.cpp
 SOURCES += candlesticks_overlay.cpp
 SOURCES += bollinger_overlay.cpp bollinger_calculator.cpp
-SOURCES += rsi_overlay.cpp
+SOURCES += rsi_overlay.cpp rsi_calculator.cpp
 SOURCES += abstract_graph_view.cpp graph_view.cpp rsi_graph_view.cpp
 
 QT += widgets xml network

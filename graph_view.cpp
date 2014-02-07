@@ -10,12 +10,16 @@
 #include <assert.h>
 
 GraphView::GraphView() {
-	viewport = NULL;
+	m_viewport = NULL;
+}
+
+GraphViewport* GraphView::viewport() {
+	return m_viewport;
 }
 
 void GraphView::internalizeViewport(GraphViewport* viewport) {
 	qDebug() << "Internalizing new viewport";
-	this->viewport = viewport;
+	m_viewport = viewport;
 
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysRangesChanged()));
@@ -24,9 +28,9 @@ void GraphView::internalizeViewport(GraphViewport* viewport) {
 
 void GraphView::addOverlays() {
 	qDebug() << "Adding overlays";
-	overlays.push_back(new Grid(viewport));
-	overlays.push_back(new BollingerOverlay(viewport));
-	overlays.push_back(new CandlesticksOverlay(viewport));
+	overlays.push_back(new Grid(viewport()));
+	overlays.push_back(new BollingerOverlay(viewport()));
+	overlays.push_back(new CandlesticksOverlay(viewport()));
 
 	// connect(candlesticks, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
 	// connect(candlesticks, SIGNAL(candleLeft), this, SLOT(candleLeft));

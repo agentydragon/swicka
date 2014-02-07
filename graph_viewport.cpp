@@ -8,6 +8,8 @@ GraphViewport::GraphViewport(OHLCProvider* source, float viewMargin) {
 	this->source = source;
 	this->viewMargin = viewMargin;
 
+	explicitYLimits = false;
+
 	assert(source);
 
 	projection = NULL;
@@ -80,18 +82,32 @@ OHLCProvider* GraphViewport::getSourceProjection() {
 	return projection;
 }
 
+GraphViewport* GraphViewport::duplicate() {
+	GraphViewport *v = new GraphViewport(source, viewMargin);
+	v->zoomLevel = zoomLevel;
+	v->viewBegin = viewBegin;
+	v->viewEnd = viewEnd;
+	v->projection = projection;
+	return v;
+}
+
 GraphRanges GraphViewport::getRanges() {
 	GraphRanges ranges;
 	ranges.start = viewBegin;
 	ranges.end = viewEnd;
 
-	OHLC closure;
-	if (!OHLC::span(getSourceProjection(), closure)) {
-		qDebug() << "cannot construct closure, probably empty. drawing nothing.";
-	}
+	if (explicitYLimits) {
+		ranges.priceLow = yLow;
+		ranges.priceHigh = yHigh;
+	} else {
+		OHLC closure;
+		if (!OHLC::span(getSourceProjection(), closure)) {
+			qDebug() << "cannot construct closure, probably empty. drawing nothing.";
+		}
 
-	ranges.priceLow = closure.low;
-	ranges.priceHigh = closure.high;
+		ranges.priceLow = closure.low;
+		ranges.priceHigh = closure.high;
+	}
 
 	// TODO: move outside?
 	float whitespace = (ranges.priceHigh - ranges.priceLow) * viewMargin;

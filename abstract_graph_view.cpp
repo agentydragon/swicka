@@ -9,7 +9,7 @@
 #include <assert.h>
 
 void AbstractGraphView::mouseMoveEvent(QMouseEvent *e) {
-	if (viewport) {
+	if (viewport()) {
 		GraphRanges ranges = getRanges();
 		QDateTime time = ranges.getXTime(e->x());
 		float price = ranges.getYPrice(e->y());
@@ -19,7 +19,7 @@ void AbstractGraphView::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void AbstractGraphView::wheelEvent(QWheelEvent *e) {
-	if (viewport) {
+	if (viewport()) {
 		// if (e->modifiers() & Qt::ControlModifier) {
 		emit dataPointZoomed(getRanges().getXTime(e->x()), e->delta());
 		e->accept();
@@ -57,9 +57,9 @@ void AbstractGraphView::assignViewport(GraphViewport* viewport) {
 }
 
 void AbstractGraphView::notifyOverlaysProjectionChanged() {
-	if (viewport) {
+	if (viewport()) {
 		qDebug() << "notifying overlays of projection change";
-		OHLCProvider* projection = viewport->getSourceProjection();
+		OHLCProvider* projection = viewport()->getSourceProjection();
 
 		for (GraphOverlay* overlay: overlays) {
 			overlay->projectionChanged(projection);
@@ -68,7 +68,7 @@ void AbstractGraphView::notifyOverlaysProjectionChanged() {
 }
 
 void AbstractGraphView::notifyOverlaysRangesChanged() {
-	if (viewport) {
+	if (viewport()) {
 		qDebug() << "notifying overlays of ranges change";
 		GraphRanges ranges = getRanges();
 
@@ -79,20 +79,20 @@ void AbstractGraphView::notifyOverlaysRangesChanged() {
 }
 
 GraphRanges AbstractGraphView::getRanges() {
-	assert(viewport);
-	GraphRanges ranges = viewport->getRanges();
+	assert(viewport());
+	GraphRanges ranges = viewport()->getRanges();
 	ranges.width = width();
 	ranges.height = height();
 	return ranges;
 }
 
 void AbstractGraphView::redraw() {
-	if (!viewport) {
+	if (!viewport()) {
 		qDebug() << "redrawing with NULL viewport, drawing nothing.";
 		return;
 	}
 
-	qDebug() << "Redrawing. Viewport from:" << viewport->getViewBegin() << "to:" << viewport->getViewEnd();
+	qDebug() << "Redrawing. Viewport from:" << viewport()->getViewBegin() << "to:" << viewport()->getViewEnd();
 	scene->clear();
 
 	qDebug() << "== DRAWING OVERLAYS ==";
