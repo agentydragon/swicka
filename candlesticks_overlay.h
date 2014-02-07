@@ -14,7 +14,7 @@ class CandlesticksOverlay: public GraphOverlay {
 	Q_OBJECT
 
 	private:
-		GraphEventController controller;
+		GraphEventController* controller;
 		GraphViewport* viewport;
 		GraphRanges ranges;
 		OHLCProvider* projection;

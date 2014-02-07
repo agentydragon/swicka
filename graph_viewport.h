@@ -27,7 +27,6 @@ class GraphViewport: public QObject {
 
 	public:
 		GraphViewport(OHLCProvider* source, float viewMargin);
-		virtual ~GraphViewport();
 		QDateTime getViewBegin();
 		QDateTime getViewEnd();
 

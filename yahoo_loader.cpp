@@ -12,8 +12,9 @@ YahooLoader::YahooLoader(QString symbol, Period period, OHLCMemoryProvider* stor
 	this->symbol = symbol;
 	this->period = period;
 	this->storage = storage;
+	this->manager = new QNetworkAccessManager(this);
 
-	connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
+	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
 }
 
 void YahooLoader::requestFinished(QNetworkReply* reply) {
@@ -92,7 +93,7 @@ void YahooLoader::load() {
 	QUrl url = buildUrl(symbol, storage->getMinimum(), storage->getMaximum(), period);
 	qDebug() << "built URL: " << url;
 
-	reply = manager.get(QNetworkRequest(url));
+	reply = manager->get(QNetworkRequest(url));
 	qDebug() << "request launched: " << reply;
 
 	// connect(reply, SIGNAL(finished()), this, SLOT(requestFinished()));

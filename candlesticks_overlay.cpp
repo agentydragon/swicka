@@ -14,8 +14,8 @@ void CandlesticksOverlay::rangesChanged(GraphRanges ranges) {
 void CandlesticksOverlay::rebuild() {
 	qDebug() << "Rebuilding candles...";
 
-	connect(&controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(slotCandleEntered(QDateTime)));
-	connect(&controller, SIGNAL(candleLeft()), this, SLOT(slotCandleLeft()));
+	connect(controller, SIGNAL(candleEntered(QDateTime)), this, SLOT(slotCandleEntered(QDateTime)));
+	connect(controller, SIGNAL(candleLeft()), this, SLOT(slotCandleLeft()));
 }
 
 void CandlesticksOverlay::projectionChanged(OHLCProvider* projection) {
@@ -24,6 +24,8 @@ void CandlesticksOverlay::projectionChanged(OHLCProvider* projection) {
 
 CandlesticksOverlay::CandlesticksOverlay(GraphViewport* viewport) {
 	this->viewport = viewport;
+	this->controller = new GraphEventController;
+	this->controller->setParent(this);
 }
 
 void CandlesticksOverlay::insertIntoScene(QGraphicsScene* scene) {
@@ -40,7 +42,7 @@ void CandlesticksOverlay::insertIntoScene(QGraphicsScene* scene) {
 		if (projection->tryGetData(start, tick)) {
 			QDateTime next = projection->getInterval()->firstAfter(start);
 
-			Candle *candle = new Candle(start, next, tick, ranges, &controller);
+			Candle *candle = new Candle(start, next, tick, ranges, controller);
 			candle->setRanges(ranges);
 			candle->setPos(QPointF(ranges.getTimeX(start), 0));
 

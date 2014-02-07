@@ -18,14 +18,12 @@ GraphViewport::GraphViewport(OHLCProvider* source, float viewMargin) {
 	resetProjection();
 }
 
-GraphViewport::~GraphViewport() {
+void GraphViewport::resetProjection() {
 	if (projection) {
 		delete projection;
 	}
-}
-
-void GraphViewport::resetProjection() {
 	projection = new OHLCShrinker(source, viewBegin, viewEnd, source->getInterval());
+	projection->setParent(this);
 }
 
 void GraphViewport::zoom(int delta, QDateTime center) {

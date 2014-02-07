@@ -8,7 +8,7 @@ class DataLoader: public QObject {
 
 	public:
 		virtual void load() = 0;
-	
+
 	signals:
 		void dataLoaded();
 };

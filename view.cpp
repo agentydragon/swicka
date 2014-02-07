@@ -85,7 +85,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	QToolButton* printButton = new QToolButton;
 	// printButton->setIcon(QIcon(QPixmap(":/fileprint.png")));
 
-	QButtonGroup *pointerModeGroup = new QButtonGroup;
+	QButtonGroup *pointerModeGroup = new QButtonGroup(this);
 	pointerModeGroup->setExclusive(true);
 	pointerModeGroup->addButton(selectModeButton);
 	pointerModeGroup->addButton(dragModeButton);
@@ -142,7 +142,9 @@ QGraphicsView *View::view() const {
 void View::resetView() {
 	if (source) {
 		// margin: 0.5
+		if (viewport) delete viewport;
 		viewport = new GraphViewport(source, 0.5f);
+		viewport->setParent(this);
 		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));
 		connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysRangesChanged()));
 		connect(viewport, SIGNAL(changed()), this, SLOT(redraw()));

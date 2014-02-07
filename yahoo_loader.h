@@ -24,12 +24,12 @@ class YahooLoader: public DataLoader {
 		Period period;
 		OHLCMemoryProvider* storage;
 
-		QNetworkAccessManager manager;
+		QNetworkAccessManager* manager;
 		YahooCSVLoader* csvLoader;
 	public:
 		YahooLoader(QString symbol, Period period, OHLCMemoryProvider* storage);
 		virtual void load();
-	
+
 	private:
 		QNetworkReply* reply;
 		// QFile* file;

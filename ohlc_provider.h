@@ -6,7 +6,9 @@
 
 #include "candlestick_interval.h"
 
-class OHLCProvider {
+class OHLCProvider: public QObject {
+	Q_OBJECT
+
 	public:
 		class out_of_range: std::exception {};
 
