@@ -2,7 +2,6 @@
 #include <QDebug>
 
 #include "graph_view.h"
-#include "graph_overlay.h"
 
 #include "grid.h"
 #include "candlesticks_overlay.h"

@@ -17,18 +17,29 @@
 
 #include <assert.h>
 
+#include "graph_view.h"
+#include "rsi_graph_view.h"
+
 View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	source = NULL;
 	viewport = NULL;
 
 	setFrameStyle(Sunken | StyledPanel);
-	graphicsView = new GraphView();
-	graphicsView->setParent(this);
-	graphicsView->setRenderHint(QPainter::Antialiasing, false);
-	graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-	graphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-	graphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-	graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	mainGraph = new GraphView();
+	mainGraph->setParent(this);
+	mainGraph->setRenderHint(QPainter::Antialiasing, false);
+	mainGraph->setDragMode(QGraphicsView::RubberBandDrag);
+	mainGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
+	mainGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+	mainGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+	RSIGraph = new RSIGraphView();
+	RSIGraph->setParent(this);
+	RSIGraph->setRenderHint(QPainter::Antialiasing, false);
+	RSIGraph->setDragMode(QGraphicsView::RubberBandDrag);
+	RSIGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
+	RSIGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+	RSIGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 	QSize iconSize(size, size);
@@ -57,8 +68,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	dragModeButton->setText(tr("Drag"));
 	dragModeButton->setCheckable(true);
 	dragModeButton->setChecked(false);
-	*/
-	/*
 	antialiasButton = new QToolButton;
 	antialiasButton->setText(tr("Antialiasing"));
 	antialiasButton->setCheckable(true);
@@ -70,8 +79,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	openGlButton->setEnabled(QGLFormat::hasOpenGL());
 #else
 	openGlButton->setEnabled(false);
-	*/
-	/*
 #endif
 	QButtonGroup *pointerModeGroup = new QButtonGroup(this);
 	pointerModeGroup->setExclusive(true);
@@ -94,7 +101,13 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	QGridLayout *topLayout = new QGridLayout;
 	topLayout->addLayout(labelLayout, 0, 0);
-	topLayout->addWidget(graphicsView, 1, 0);
+
+	QSplitter* splitter = new QSplitter(this);
+	splitter->setOrientation(Qt::Vertical);
+	splitter->addWidget(mainGraph);
+	splitter->addWidget(RSIGraph);
+
+	topLayout->addWidget(splitter, 1, 0);
 	topLayout->addLayout(zoomSliderLayout, 1, 1);
 	topLayout->addWidget(resetButton, 2, 1);
 	setLayout(topLayout);
@@ -111,8 +124,8 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	resetView();
 
-	connect(graphicsView, SIGNAL(dataPointHovered(QDateTime, float)), this, SLOT(graphViewDataPointHovered(QDateTime, float)));
-	connect(graphicsView, SIGNAL(dataPointZoomed(QDateTime, int)), this, SLOT(zoom(QDateTime, int)));
+	connect(mainGraph, SIGNAL(dataPointHovered(QDateTime, float)), this, SLOT(graphViewDataPointHovered(QDateTime, float)));
+	connect(mainGraph, SIGNAL(dataPointZoomed(QDateTime, int)), this, SLOT(zoom(QDateTime, int)));
 }
 
 void View::graphViewDataPointHovered(QDateTime time, float price) {
@@ -120,13 +133,14 @@ void View::graphViewDataPointHovered(QDateTime time, float price) {
 }
 
 QGraphicsScene* View::getMainScene() {
-	return graphicsView->getScene();
+	return mainGraph->getScene();
 }
 
 void View::resetView() {
 	if (source) {
 		viewport->reset();
-		graphicsView->assignViewport(viewport);
+		mainGraph->assignViewport(viewport);
+		RSIGraph->assignViewport(viewport);
 	} else {
 		qDebug() << "calling resetView with no source, doing nothing";
 	}
@@ -134,30 +148,31 @@ void View::resetView() {
 
 /*
 void View::togglePointerMode() {
-	graphicsView->setDragMode(selectModeButton->isChecked()
+	mainGraph->setDragMode(selectModeButton->isChecked()
 			? QGraphicsView::RubberBandDrag
 			: QGraphicsView::ScrollHandDrag);
-	graphicsView->setInteractive(selectModeButton->isChecked());
+	mainGraph->setInteractive(selectModeButton->isChecked());
 }
 
 void View::toggleOpenGL() {
 #ifndef QT_NO_OPENGL
-	graphicsView->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
+	mainGraph->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
 #endif
 }
-*/
 
-/*
 void View::toggleAntialiasing() {
-	graphicsView->setRenderHint(QPainter::Antialiasing, antialiasButton->isChecked());
+	mainGraph->setRenderHint(QPainter::Antialiasing, antialiasButton->isChecked());
 }
 */
 
 void View::zoom(QDateTime center, int delta) {
 	if (viewport) {
 		viewport->zoom(delta, center);
-		graphicsView->notifyOverlaysProjectionChanged();
-		graphicsView->notifyOverlaysRangesChanged();
+		mainGraph->notifyOverlaysProjectionChanged();
+		mainGraph->notifyOverlaysRangesChanged();
+
+		RSIGraph->notifyOverlaysProjectionChanged();
+		RSIGraph->notifyOverlaysRangesChanged();
 	} else {
 		qDebug() << "no viewport, doing nothing";
 	}
@@ -174,5 +189,5 @@ void View::changeDataSource(OHLCProvider* source) {
 	resetView();
 }
 
-int View::getViewportWidth() { return graphicsView->width(); }
-int View::getViewportHeight() { return graphicsView->height(); }
+int View::getViewportWidth() { return mainGraph->width(); }
+int View::getViewportHeight() { return mainGraph->height(); }

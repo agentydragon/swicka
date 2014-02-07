@@ -4,7 +4,7 @@
 #include "ohlc_provider.h"
 #include "graph_ranges.h"
 #include "graph_viewport.h"
-#include "graph_view.h"
+#include "abstract_graph_view.h"
 
 class QGraphicsScene;
 class QLabel;
@@ -39,7 +39,8 @@ class View : public QFrame {
 
 		OHLCProvider* source;
 
-		GraphView *graphicsView;
+		AbstractGraphView *mainGraph;
+		AbstractGraphView *RSIGraph;
 		QLabel *label;
 		QLabel *label2;
 		//QToolButton *selectModeButton;
