@@ -7,6 +7,11 @@ float GraphRanges::getPriceY(float price) {
 	return (1.0f - level) * height;
 }
 
+float GraphRanges::getYPrice(float y) {
+	float rl = 1.0f - (y / height);
+	return (rl * (priceHigh - priceLow)) + priceLow;
+}
+
 float GraphRanges::getTimeX(QDateTime time) {
 	float level = (float)(time.toTime_t() - start.toTime_t()) / (end.toTime_t() - start.toTime_t());
 	return level * width;

@@ -37,8 +37,7 @@ class MainWindow : public QMainWindow {
 	private slots:
 		void loadYahooStock();
 		void exportImage();
-
-	public slots:
+		void graphPointHover(QDateTime time, float price);
 		void drawData();
 };
 

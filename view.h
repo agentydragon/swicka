@@ -17,8 +17,9 @@ class View;
 class GraphicsView : public QGraphicsView {
 	Q_OBJECT
 	public:
-		GraphicsView(View *v) : QGraphicsView(), view(v) { }
+		GraphicsView(View *v);
 	protected:
+		void mouseMoveEvent(QMouseEvent *);
 		void wheelEvent(QWheelEvent *);
 		void resizeEvent(QResizeEvent *);
 	private:
@@ -68,6 +69,10 @@ class View : public QFrame {
 	private slots:
 		void notifyOverlaysProjectionChanged();
 		void notifyOverlaysRangesChanged();
+	public slots:
+		void viewMouseMoved(int x, int y);
+	signals:
+		void graphPointHover(QDateTime time, float price);
 	public:
 		int getViewportWidth(); int getViewportHeight();
 		QGraphicsScene* getScene();

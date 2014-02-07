@@ -22,6 +22,14 @@
 
 #include <assert.h>
 
+GraphicsView::GraphicsView(View *v): QGraphicsView(v), view(v) {
+	setMouseTracking(true);
+}
+
+void GraphicsView::mouseMoveEvent(QMouseEvent *e) {
+	view->viewMouseMoved(e->x(), e->y());
+}
+
 void GraphicsView::wheelEvent(QWheelEvent *e) {
 	// if (e->modifiers() & Qt::ControlModifier) {
 	view->zoom(e->delta(), e->x());
@@ -189,6 +197,15 @@ void View::toggleOpenGL() {
 #ifndef QT_NO_OPENGL
 	graphicsView->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
 #endif
+}
+
+void View::viewMouseMoved(int x, int y) {
+	if (viewport) {
+		GraphRanges ranges = getRanges();
+		QDateTime time = ranges.getXTime(x);
+		float price = ranges.getYPrice(y);
+		emit graphPointHover(time, price);
+	}
 }
 
 void View::toggleAntialiasing() {
