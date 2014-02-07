@@ -1,0 +1,124 @@
+{
+   <fuck_qtnetwork>
+   Memcheck:Cond
+   fun:_Z8qstricmpPKcS0_
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <inflation_error>
+   Memcheck:Value8
+   fun:inflate
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <fuck_qtnetwork_with_pressurized_asphalt>
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/libQt5Network.so.5.2.0
+}
+{
+   <fuck_qtnetwork_with_a_rake>
+   Memcheck:Value8
+   ...
+   obj:/usr/lib/libQt5Network.so.5.2.0
+}
+{
+   <fuck_qtnetwork_in_particular>
+   Memcheck:Addr8
+   ...
+   obj:/usr/lib/libQt5Network.so.5.2.0
+}
+{
+   <fuck_qtnetwork_with_a_rake_tipped_with_spikes>
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:/usr/lib/libQt5Network.so.5.2.0
+}
+{
+   <stupid_freetype>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun: malloc
+   ...
+   obj:/usr/lib/freetype.so.6.10.1
+}
+{
+   <stupid_fontfontif>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun: malloc
+   ...
+   obj:/usr/lib/libfontconfig.so.1.8.0
+}
+{
+   <yahoo_libz_memcpy>
+   Memcheck:Value8
+   fun:memcpy@@GLIBC_2.14
+   obj:/usr/lib/libz.so.1.2.8
+   fun:inflate
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <qt_metaobject_device_read>
+   Memcheck:Cond
+   fun:_ZN9QIODevice4readEPcx
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <qt_network_device_read>
+   Memcheck:Value8
+   fun:memcpy@@GLIBC_2.14
+   fun:_ZN9QIODevice4readEPcx
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <network_device_read>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:_ZN9QIODevice4readEPcx
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <metaobject_device_read>
+   Memcheck:Value8
+   fun:memcpy@@GLIBC_2.14
+   fun:_ZN9QIODevice4readEPcx
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <yahoo_network_inflate>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   obj:/usr/lib/libz.so.1.2.8
+   fun:inflate
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <qtnetwork_inflate>
+   Memcheck:Value8
+   obj:/usr/lib/libz.so.1.2.8
+   fun:inflate
+   obj:/usr/lib/libQt5Network.so.5.2.0
+   ...
+}
+{
+   <libgobject_is_stupid>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:g_malloc0
+   obj:/usr/lib/libgobject-2.0.so.0.3800.2
+   ...
+   fun:call_init.part.0
+   fun:_dl_init
+   obj:/usr/lib/ld-2.18.so
+}

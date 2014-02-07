@@ -19,9 +19,6 @@ class CandlesticksOverlay: public GraphOverlay {
 		GraphRanges ranges;
 		OHLCProvider* projection;
 
-		QList<Candle*> candles;
-
-		void destroy();
 		void rebuild();
 	public slots:
 		virtual void rangesChanged(GraphRanges ranges);
@@ -29,7 +26,6 @@ class CandlesticksOverlay: public GraphOverlay {
 	public:
 		CandlesticksOverlay(GraphViewport* viewport);
 		virtual void insertIntoScene(QGraphicsScene* scene);
-		virtual ~CandlesticksOverlay();
 	private slots:
 		void slotCandleEntered(QDateTime start);
 		void slotCandleLeft();

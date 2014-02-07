@@ -65,7 +65,6 @@ class View : public QFrame {
 		QToolButton *dragModeButton;
 		QToolButton *openGlButton;
 		QToolButton *antialiasButton;
-		QToolButton *printButton;
 		QToolButton *resetButton;
 		// QSlider *zoomSlider;
 	private slots:

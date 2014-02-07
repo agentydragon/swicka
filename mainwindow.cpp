@@ -10,6 +10,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	view = new View("Top left view");
+	view->setParent(this);
 
 	setCentralWidget(view);
 	setWindowTitle(tr("TODO titulek"));

@@ -5,6 +5,8 @@
 #include <QTextStream>
 
 class CSVReader: public QObject {
+	Q_OBJECT
+
 	private:
 		QTextStream* stream;
 		QString currentLine;

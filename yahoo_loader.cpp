@@ -28,6 +28,7 @@ void YahooLoader::requestFinished(QNetworkReply* reply) {
 		file->close();
 		*/
 		csvLoader = new YahooCSVLoader(reply, storage);
+		csvLoader->setParent(this);
 		connect(csvLoader, SIGNAL(dataLoaded()), this, SLOT(csvLoaded()));
 		csvLoader->load();
 	}

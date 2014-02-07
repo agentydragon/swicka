@@ -47,8 +47,8 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 	QSize iconSize(size, size);
 
-	QToolButton *zoomInIcon = new QToolButton;
-	QToolButton *zoomOutIcon = new QToolButton;
+	QToolButton* zoomInIcon = new QToolButton;
+	QToolButton* zoomOutIcon = new QToolButton;
 
 	// Zoom slider layout
 	QVBoxLayout *zoomSliderLayout = new QVBoxLayout;
@@ -82,7 +82,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 #else
 	openGlButton->setEnabled(false);
 #endif
-	printButton = new QToolButton;
+	QToolButton* printButton = new QToolButton;
 	// printButton->setIcon(QIcon(QPixmap(":/fileprint.png")));
 
 	QButtonGroup *pointerModeGroup = new QButtonGroup;
@@ -118,6 +118,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	scene = new QGraphicsScene;
 	view()->setScene(scene);
+	scene->setParent(this);
 
 	resetView();
 

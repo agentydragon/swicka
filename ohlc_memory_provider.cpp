@@ -5,7 +5,7 @@ OHLCMemoryProvider::OHLCMemoryProvider(QDateTime minimum, QDateTime maximum, Can
 	this->minimum = interval->lastBefore(minimum);
 	this->maximum = interval->firstAfter(maximum);
 
-	length = interval->index(minimum, maximum) + 1;
+	length = interval->index(minimum, maximum) + 2;
 	data = vector<pair<OHLC, bool> >(length, make_pair(OHLC(), false));
 }
 
