@@ -11,7 +11,7 @@ HEADERS += x_axis_labeler.h x_axis_year_labeler.h x_axis_month_labeler.h x_axis_
 HEADERS += candlestick_interval.h graph_viewport.h
 HEADERS += graph_overlay.h candlesticks_overlay.h
 HEADERS += bollinger_overlay.h bollinger_calculator.h
-HEADERS += graph_view.h
+HEADERS += abstract_graph_view.h graph_view.h
 
 SOURCES += main.cpp
 SOURCES += mainwindow.cpp view.cpp candle.cpp grid.cpp
@@ -25,7 +25,7 @@ SOURCES += x_axis_year_labeler.cpp x_axis_month_labeler.cpp x_axis_day_labeler.c
 SOURCES += candlestick_interval.cpp graph_viewport.cpp
 SOURCES += candlesticks_overlay.cpp
 SOURCES += bollinger_overlay.cpp bollinger_calculator.cpp
-SOURCES += graph_view.cpp
+SOURCES += abstract_graph_view.cpp graph_view.cpp
 
 QT += widgets xml network
 qtHaveModule(printsupport): QT += printsupport
