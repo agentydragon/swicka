@@ -41,6 +41,7 @@ class View : public QFrame {
 
 		AbstractGraphView *mainGraph;
 		AbstractGraphView *RSIGraph;
+		AbstractGraphView *MACDGraph;
 		QLabel *label;
 		QLabel *label2;
 		//QToolButton *selectModeButton;

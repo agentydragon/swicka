@@ -56,6 +56,5 @@ bool OHLC::span(OHLCProvider* provider, OHLC& result) {
 }
 
 OHLC::operator float() {
-	// TODO: close???
-	return (open + high + low + close) / 4;
+	return close;
 }

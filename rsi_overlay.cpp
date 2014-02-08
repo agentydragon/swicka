@@ -4,7 +4,6 @@
 #include <QPainter>
 
 #include "ohlc_provider.h"
-#include "candle.h"
 
 #include <assert.h>
 
@@ -25,7 +24,7 @@ RSIOverlay::RSIOverlay(GraphViewport* viewport) {
 // TODO: settable N
 void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
 	// Populate scene
-	qDebug() << "Rendering candlestick overlay";
+	qDebug() << "Rendering RSI overlay";
 
 	RSICalculator calculator;
 	Graphics* item = new Graphics(ranges);
@@ -34,6 +33,7 @@ void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
 	bool gotSomething = false;
 
 	int N = 14;
+	// hack
 	QDateTime start = projection->getInterval()->minus(ranges.start, N + 1);
 	qDebug() << "RSI overlay start:" << start;
 
@@ -46,6 +46,7 @@ void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
 		if (gotSomething) {
 			calculator << tick;
 			float entry;
+			// hack
 			if (i >= projection->getMinimum() && calculator.get(entry)) {
 				qDebug() << i << "==>" << entry;
 				item->data.push_back(QPair<QDateTime, float>(i, entry));
@@ -82,7 +83,7 @@ void RSIOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsIt
 		float x1 = ranges.getTimeX(data[i - 1].first),
 			x2 = ranges.getTimeX(data[i].first);
 
-		painter->setPen(QPen(Qt::blue, 2.0f));
+		painter->setPen(QPen(Qt::blue, 1.0f));
 		painter->drawLine(
 			QPointF(x1, ranges.getPriceY(data[i - 1].second)),
 			QPointF(x2, ranges.getPriceY(data[i].second))

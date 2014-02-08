@@ -17,7 +17,6 @@ struct OHLC {
 
 		static bool span(OHLCProvider* provider, OHLC& result);
 
-		// XXX: bad...
 		explicit operator float();
 };
 

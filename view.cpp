@@ -19,6 +19,7 @@
 
 #include "graph_view.h"
 #include "rsi_graph_view.h"
+#include "macd_graph_view.h"
 
 View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	source = NULL;
@@ -40,6 +41,14 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	RSIGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
 	RSIGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 	RSIGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+	MACDGraph = new MACDGraphView();
+	MACDGraph->setParent(this);
+	MACDGraph->setRenderHint(QPainter::Antialiasing, false);
+	MACDGraph->setDragMode(QGraphicsView::RubberBandDrag);
+	MACDGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
+	MACDGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+	MACDGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 	QSize iconSize(size, size);
@@ -106,6 +115,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	splitter->setOrientation(Qt::Vertical);
 	splitter->addWidget(mainGraph);
 	splitter->addWidget(RSIGraph);
+	splitter->addWidget(MACDGraph);
 
 	topLayout->addWidget(splitter, 1, 0);
 	topLayout->addLayout(zoomSliderLayout, 1, 1);
@@ -141,6 +151,7 @@ void View::resetView() {
 		viewport->reset();
 		mainGraph->assignViewport(viewport);
 		RSIGraph->assignViewport(viewport);
+		MACDGraph->assignViewport(viewport);
 	} else {
 		qDebug() << "calling resetView with no source, doing nothing";
 	}
@@ -173,6 +184,9 @@ void View::zoom(QDateTime center, int delta) {
 
 		RSIGraph->notifyOverlaysProjectionChanged();
 		RSIGraph->notifyOverlaysRangesChanged();
+
+		MACDGraph->notifyOverlaysProjectionChanged();
+		MACDGraph->notifyOverlaysRangesChanged();
 	} else {
 		qDebug() << "no viewport, doing nothing";
 	}
