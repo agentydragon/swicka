@@ -11,6 +11,12 @@ void OHLC::operator<<(const OHLC& other) {
 	close = other.close;
 }
 
+void OHLC::operator<<(float x) {
+	high = fmax(x, high);
+	low = fmin(x, low);
+	close = x;
+}
+
 bool OHLC::isUp() {
 	return open <= close;
 }

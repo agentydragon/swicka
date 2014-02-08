@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "macd_calculator.h"
+#include "graph_viewport.h"
 
 void MACDOverlay::rangesChanged(GraphRanges ranges) {
 	this->ranges = ranges;
@@ -98,6 +99,40 @@ void MACDOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsI
 
 // HACK
 GraphViewport* MACDOverlay::internalizedViewport(GraphViewport* viewport) {
-	// TODO
+	OHLCProvider* projection = viewport->getSourceProjection();
+	OHLC tick(0, 0, 0, 0);
+	bool gotSomething = false;
+	bool gotSomeData = false;
+	MACDCalculator calculator;
+	for (QDateTime i = viewport->getViewBegin(); i < viewport->getViewEnd();
+			i = projection->getInterval()->firstAfter(i)) {
+		if (projection->tryGetData(i, tick)) {
+			gotSomething = true; // to skip empty days
+		}
+
+		if (gotSomething) {
+			calculator << tick;
+			MACDCalculator::Entry entry;
+			if (calculator.get(entry)) {
+				tick << entry.macd;
+				tick << entry.signal;
+				tick << entry.histogram; // TODO: signal je vazeny prumer a histogram je rozdil.
+				// TODO: asi neni vubec potreba standardizovat podle neceho jinyho...
+				// TODO: histogram ale vlastne bude potrebovat jinou osu, ne?
+				gotSomeData = true;
+			}
+		}
+	}
+
+	if (gotSomeData) {
+		// TODO: viewport factory? (skala na Y: podle min/max, podle OHLCProvider, ...)
+		GraphViewport* v = viewport->duplicate();
+		v->explicitYLimits = true;
+		v->yLow = tick.low;
+		v->yHigh = tick.high;
+		return v; // TODO: cache it!
+	}
+
+	// XXX
 	return viewport;
 }

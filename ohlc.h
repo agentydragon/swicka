@@ -12,6 +12,7 @@ struct OHLC {
 
 		float open, high, low, close;
 		void operator<<(const OHLC& other);
+		void operator<<(float x);
 		bool isUp();
 		void standardizeTo(OHLC general);
 
