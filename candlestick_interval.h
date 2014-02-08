@@ -59,15 +59,8 @@ namespace CI {
 
 	class Day: public CandlestickInterval {
 		public:
-			virtual QDateTime lastBefore(QDateTime x) {
-				x.setTime(QTime(0, 0, 0));
-				return x;
-			}
-
-			virtual QDateTime firstAfter(QDateTime x) {
-				return lastBefore(x).addDays(1);
-			}
-
+			virtual QDateTime lastBefore(QDateTime x);
+			virtual QDateTime firstAfter(QDateTime x);
 			virtual int index(QDateTime start, QDateTime end);
 	};
 

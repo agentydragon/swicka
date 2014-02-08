@@ -26,21 +26,30 @@ int CandlestickInterval::index(QDateTime start, QDateTime end) {
 	return j;
 }
 
-int CI::Day::index(QDateTime start, QDateTime end) {
-	QDateTime i = lastBefore(start);
-	end = firstAfter(end);
+QDateTime CI::Day::lastBefore(QDateTime x) {
+	x.setTime(QTime(0, 0, 0));
+	return x;
+}
+
+QDateTime CI::Day::firstAfter(QDateTime x) {
+	return QDateTime(x.date().addDays(1));
+}
+
+int CI::Day::index(QDateTime start, QDateTime endDT) {
+	QDate i = start.date();
+	QDate end = firstAfter(endDT).date();
 
 	int days = 0;
 
 	// Bigger jumps
-	while (i.date().month() < end.date().month() - 1 || i.date().year() < end.date().year()) {
-		days += i.date().daysInMonth();
+	while (i.month() < end.month() - 1 || i.year() < end.year()) {
+		days += i.daysInMonth();
 		i = i.addMonths(1);
 
 		// qDebug() << "*" << i << " #" << days;
 	}
 
-	for (; i < firstAfter(end); i = firstAfter(i), days++) {
+	for (; i < end; i = i.addDays(1), days++) {
 		// qDebug() << "*" << i << " #" << days;
 	}
 	// qDebug() << "->" << days;
