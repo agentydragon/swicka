@@ -27,10 +27,26 @@ QDateTime AxisPair::getMaxTime() const {
 	return timeAxis.getMaxTime();
 }
 
+float AxisPair::getMinPrice() const {
+	return numberAxis.getMinNum();
+}
+
+float AxisPair::getMaxPrice() const {
+	return numberAxis.getMaxNum();
+}
+
 float AxisPair::getMinTimeX() const {
 	return getTimeX(getMinTime());
 }
 
 float AxisPair::getMaxTimeX() const {
 	return getTimeX(getMaxTime());
+}
+
+float AxisPair::getMinPriceY() const {
+	return getPriceY(getMinPrice());
+}
+
+float AxisPair::getMaxPriceY() const {
+	return getPriceY(getMaxPrice());
 }

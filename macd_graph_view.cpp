@@ -64,7 +64,7 @@ NumberAxis MACDGraphView::numberAxis() {
 			}
 		}
 	}
-	qDebug() << "MACD closure:" << closure;
+	// qDebug() << "MACD closure:" << closure;
 
 	return NumberAxis(closure.low, closure.high, 0.0f, height());
 }

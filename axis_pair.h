@@ -18,11 +18,18 @@ class AxisPair {
 		float getPriceY(float price) const; // TODO: rename
 		float getWidth() const;
 		float getHeight() const;
+
 		QDateTime getMinTime() const;
 		QDateTime getMaxTime() const;
 
+		float getMinPrice() const;
+		float getMaxPrice() const;
+
 		float getMinTimeX() const;
 		float getMaxTimeX() const;
+
+		float getMinPriceY() const;
+		float getMaxPriceY() const;
 };
 
 #endif

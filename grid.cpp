@@ -31,7 +31,7 @@ void Grid::GridGraphics::paint(QPainter *painter, const QStyleOptionGraphicsItem
 		painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignLeft, label.second);
 
 		painter->setPen(gridPen);
-		painter->drawLine(x, 0.0, x, axisPair.getHeight());
+		painter->drawLine(QPointF(x, axisPair.getMinPriceY()), QPointF(x, axisPair.getMaxPriceY()));
 	}
 }
 
