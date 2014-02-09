@@ -27,3 +27,8 @@ bool MACDCalculator::get(Entry& output) {
 	output = current;
 	return gotSome;
 }
+
+QDebug operator<< (QDebug d, const MACDCalculator::Entry &entry) {
+	d << "[MACD:" << entry.macd << "Sig:" << entry.signal << "Hist:" << entry.histogram << "]";
+    return d;
+}

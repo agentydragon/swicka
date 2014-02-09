@@ -18,6 +18,7 @@ class MACDGraphView: public AbstractGraphView {
 		virtual GraphViewport* viewport();
 		virtual void internalizeViewport(GraphViewport* viewport);
 		virtual void addOverlays();
+		virtual NumberAxis numberAxis(); // min..max of MACD
 };
 
 #endif

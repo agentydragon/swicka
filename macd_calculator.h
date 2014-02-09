@@ -19,4 +19,6 @@ class MACDCalculator {
 		bool get(Entry& output);
 };
 
+QDebug operator<< (QDebug d, const MACDCalculator::Entry &entry);
+
 #endif

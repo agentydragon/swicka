@@ -50,7 +50,7 @@ void MACDOverlay::insertIntoScene(QGraphicsScene* scene) {
 		if (gotSomething) {
 			calculator << tick;
 			MACDCalculator::Entry entry;
-			if (calculator.get(entry)) {
+			if (calculator.get(entry) && i >= projection->getMinimum()) {
 				item->data.push_back(QPair<QDateTime, MACDCalculator::Entry>(i, entry));
 			}
 		}
@@ -80,7 +80,8 @@ void MACDOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsI
 
 	// Zero level
 	painter->setPen(QPen(Qt::black, 1.0f));
-	painter->drawLine(QPointF(0.0f, axisPair.getPriceY(0.0f)), QPointF(axisPair.getWidth(), axisPair.getPriceY(0.0f)));
+	float zero = axisPair.getPriceY(0.0f);
+	painter->drawLine(QPointF(axisPair.getMinTimeX(), zero), QPointF(axisPair.getMaxTimeX(), zero));
 
 	for (int i = 1; i < data.size(); i++) {
 		float x1 = axisPair.getTimeX(data[i - 1].first),
@@ -97,47 +98,12 @@ void MACDOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsI
 			QPointF(x1, axisPair.getPriceY(data[i - 1].second.signal)),
 			QPointF(x2, axisPair.getPriceY(data[i].second.signal))
 		);
+
+		float margin = (x2 - x1) * 0.2;
+		// TODO: separatni osa
+		QRectF rect(x1, zero, (x2 - x1) - margin, axisPair.getPriceY(data[i - 1].second.histogram) - zero);
+
+		QColor fillColor = QColor(200, 200, 200);
+		painter->fillRect(rect, QBrush(fillColor));
 	}
 }
-
-// HACK
-/*
-GraphViewport* MACDOverlay::internalizedViewport(GraphViewport* viewport) {
-	OHLCProvider* projection = viewport->getSourceProjection();
-	OHLC tick(0, 0, 0, 0);
-	bool gotSomething = false;
-	bool gotSomeData = false;
-	MACDCalculator calculator;
-	for (QDateTime i = viewport->getViewBegin(); i < viewport->getViewEnd();
-			i = projection->getInterval()->firstAfter(i)) {
-		if (projection->tryGetData(i, tick)) {
-			gotSomething = true; // to skip empty days
-		}
-
-		if (gotSomething) {
-			calculator << tick;
-			MACDCalculator::Entry entry;
-			if (calculator.get(entry)) {
-				tick << entry.macd;
-				tick << entry.signal;
-				tick << entry.histogram; // TODO: signal je vazeny prumer a histogram je rozdil.
-				// TODO: asi neni vubec potreba standardizovat podle neceho jinyho...
-				// TODO: histogram ale vlastne bude potrebovat jinou osu, ne?
-				gotSomeData = true;
-			}
-		}
-	}
-
-	if (gotSomeData) {
-		// TODO: viewport factory? (skala na Y: podle min/max, podle OHLCProvider, ...)
-		GraphViewport* v = viewport->duplicate();
-		v->explicitYLimits = true;
-		v->yLow = tick.low;
-		v->yHigh = tick.high;
-		return v; // TODO: cache it!
-	}
-
-	// XXX
-	return viewport;
-}
-*/
