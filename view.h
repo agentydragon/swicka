@@ -2,7 +2,6 @@
 #define VIEW_H
 
 #include "ohlc_provider.h"
-#include "graph_ranges.h"
 #include "graph_viewport.h"
 #include "abstract_graph_view.h"
 
@@ -34,7 +33,6 @@ class View : public QFrame {
 		// void toggleAntialiasing();
 
 	private:
-		GraphRanges getRanges();
 		GraphViewport *viewport;
 
 		OHLCProvider* source;

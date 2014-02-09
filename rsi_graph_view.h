@@ -18,6 +18,7 @@ class RSIGraphView: public AbstractGraphView {
 		virtual GraphViewport* viewport();
 		virtual void internalizeViewport(GraphViewport* viewport);
 		virtual void addOverlays();
+		virtual NumberAxis numberAxis(); // 0 .. 100
 };
 
 #endif

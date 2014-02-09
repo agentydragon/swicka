@@ -3,25 +3,23 @@
 
 // TODO: scena by se nemela sama od sebe cela rozbijet, ne?
 
+#include "axis_pair.h"
 #include "graph_overlay.h"
 #include <QList>
 #include <QGraphicsItem>
-
-class GraphViewport;
 
 class RSIOverlay: public GraphOverlay {
 	Q_OBJECT
 
 	private:
-		GraphViewport* viewport;
-		GraphRanges ranges;
+		AxisPair axisPair;
 		OHLCProvider* projection;
 
 		class Graphics: public QGraphicsItem {
 			private:
-				GraphRanges ranges;
+				AxisPair axisPair;
 			public:
-				Graphics(GraphRanges ranges);
+				Graphics(AxisPair pair);
 				QList<QPair<QDateTime, float>> data;
 
 				QRectF boundingRect() const;
@@ -29,10 +27,11 @@ class RSIOverlay: public GraphOverlay {
 				void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 		};
 	public slots:
-		virtual void rangesChanged(GraphRanges ranges);
+		virtual void timeAxisChanged(TimeAxis timeAxis);
+		virtual void numberAxisChanged(NumberAxis numberAxis);
 		virtual void projectionChanged(OHLCProvider* projection);
 	public:
-		RSIOverlay(GraphViewport* viewport);
+		RSIOverlay();
 		virtual void insertIntoScene(QGraphicsScene* scene);
 };
 

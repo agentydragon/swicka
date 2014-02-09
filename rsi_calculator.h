@@ -6,7 +6,7 @@
 
 class RSICalculator {
 	public:
-		RSICalculator(int N = 14);
+		RSICalculator(unsigned int N = 14);
 		void operator<<(OHLC datapoint);
 		bool get(float& output);
 	private:
@@ -15,7 +15,7 @@ class RSICalculator {
 		};
 		float getUpAvg();
 		float getDownAvg();
-		int N;
+		unsigned int N;
 		std::deque<Entry> data;
 };
 

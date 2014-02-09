@@ -4,30 +4,29 @@
 #include <QtWidgets>
 
 #include "graph_overlay.h"
-
-class GraphViewport;
+#include "axis_pair.h"
 
 class Grid: public GraphOverlay {
 	Q_OBJECT
 
 	private:
-		GraphViewport* viewport;
-		GraphRanges ranges;
+		AxisPair axisPair;
 	public slots:
-		virtual void rangesChanged(GraphRanges ranges);
+		virtual void timeAxisChanged(TimeAxis timeAxis);
+		virtual void numberAxisChanged(NumberAxis numberAxis);
 		virtual void projectionChanged(OHLCProvider* projection);
 	public:
-		Grid(GraphViewport* viewport);
+		Grid();
 		virtual void insertIntoScene(QGraphicsScene* scene);
 
 		class GridGraphics: public QGraphicsItem {
 		public:
-			GridGraphics(GraphRanges ranges);
+			GridGraphics(AxisPair axisPair);
 			void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 			QRectF boundingRect() const;
 			QPainterPath shape() const;
 		private:
-			GraphRanges ranges;
+			AxisPair axisPair;
 			QList<QPair<QDateTime, QString> > xlabels;
 			QList<QPair<float, QString> > ylabels;
 		};

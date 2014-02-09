@@ -5,9 +5,9 @@
 
 #include "graph_overlay.h"
 #include "graph_event_controller.h"
+#include "axis_pair.h"
 #include <QList>
 
-class GraphViewport;
 class Candle;
 
 class CandlesticksOverlay: public GraphOverlay {
@@ -15,16 +15,16 @@ class CandlesticksOverlay: public GraphOverlay {
 
 	private:
 		GraphEventController* controller;
-		GraphViewport* viewport;
-		GraphRanges ranges;
 		OHLCProvider* projection;
+		AxisPair axisPair;
 
 		void rebuild();
 	public slots:
-		virtual void rangesChanged(GraphRanges ranges);
+		virtual void timeAxisChanged(TimeAxis timeAxis);
+		virtual void numberAxisChanged(NumberAxis numberAxis);
 		virtual void projectionChanged(OHLCProvider* projection);
 	public:
-		CandlesticksOverlay(GraphViewport* viewport);
+		CandlesticksOverlay();
 		virtual void insertIntoScene(QGraphicsScene* scene);
 	private slots:
 		void slotCandleEntered(QDateTime start);

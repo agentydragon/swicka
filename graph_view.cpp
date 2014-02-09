@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #include "graph_view.h"
-
+#include "graph_viewport.h"
 #include "grid.h"
 #include "candlesticks_overlay.h"
 #include "bollinger_overlay.h"
@@ -28,9 +28,10 @@ void GraphView::internalizeViewport(GraphViewport* viewport) {
 
 void GraphView::addOverlays() {
 	qDebug() << "Adding overlays";
-	overlays.push_back(new Grid(viewport()));
-	overlays.push_back(new BollingerOverlay(viewport()));
-	overlays.push_back(new CandlesticksOverlay(viewport()));
+
+	overlays.push_back(new Grid());
+	overlays.push_back(new BollingerOverlay());
+	overlays.push_back(new CandlesticksOverlay());
 
 	// connect(candlesticks, SIGNAL(candleEntered(QDateTime)), this, SLOT(candleEntered(QDateTime)));
 	// connect(candlesticks, SIGNAL(candleLeft), this, SLOT(candleLeft));

@@ -7,8 +7,12 @@
 
 #include <assert.h>
 
-void CandlesticksOverlay::rangesChanged(GraphRanges ranges) {
-	this->ranges = ranges;
+void CandlesticksOverlay::numberAxisChanged(NumberAxis numberAxis) {
+	axisPair.numberAxis = numberAxis;
+}
+
+void CandlesticksOverlay::timeAxisChanged(TimeAxis timeAxis) {
+	axisPair.timeAxis = timeAxis;
 }
 
 void CandlesticksOverlay::rebuild() {
@@ -22,8 +26,7 @@ void CandlesticksOverlay::projectionChanged(OHLCProvider* projection) {
 	this->projection = projection;
 }
 
-CandlesticksOverlay::CandlesticksOverlay(GraphViewport* viewport) {
-	this->viewport = viewport;
+CandlesticksOverlay::CandlesticksOverlay() {
 	this->controller = new GraphEventController;
 	this->controller->setParent(this);
 }
@@ -42,9 +45,10 @@ void CandlesticksOverlay::insertIntoScene(QGraphicsScene* scene) {
 		if (projection->tryGetData(start, tick)) {
 			QDateTime next = projection->getInterval()->firstAfter(start);
 
-			Candle *candle = new Candle(start, next, tick, ranges, controller);
-			candle->setRanges(ranges);
-			candle->setPos(QPointF(ranges.getTimeX(start), 0));
+			Candle *candle = new Candle(start, next, tick, axisPair, controller);
+			float x = axisPair.getTimeX(start);
+			qDebug() << "candle for" << start << "at X=" << x;
+			candle->setPos(QPointF(x, 0));
 
 			scene->addItem(candle);
 			nitems++;

@@ -9,17 +9,19 @@
 
 #include "rsi_calculator.h"
 
-void RSIOverlay::rangesChanged(GraphRanges ranges) {
-	this->ranges = ranges;
+void RSIOverlay::timeAxisChanged(TimeAxis timeAxis) {
+	axisPair.timeAxis = timeAxis;
+}
+
+void RSIOverlay::numberAxisChanged(NumberAxis numberAxis) {
+	axisPair.numberAxis = numberAxis;
 }
 
 void RSIOverlay::projectionChanged(OHLCProvider* projection) {
 	this->projection = projection;
 }
 
-RSIOverlay::RSIOverlay(GraphViewport* viewport) {
-	this->viewport = viewport;
-}
+RSIOverlay::RSIOverlay() {}
 
 // TODO: settable N
 void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
@@ -27,17 +29,17 @@ void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
 	qDebug() << "Rendering RSI overlay";
 
 	RSICalculator calculator;
-	Graphics* item = new Graphics(ranges);
+	Graphics* item = new Graphics(axisPair);
 
 	OHLC tick;
 	bool gotSomething = false;
 
 	int N = 14;
 	// hack
-	QDateTime start = projection->getInterval()->minus(ranges.start, N + 1);
+	QDateTime start = projection->getInterval()->minus(axisPair.getMinTime(), N + 1);
 	qDebug() << "RSI overlay start:" << start;
 
-	for (QDateTime i = start; i < ranges.end;
+	for (QDateTime i = start; i < axisPair.getMaxTime();
 			i = projection->getInterval()->firstAfter(i)) {
 		if (projection->tryGetData(i, tick)) {
 			gotSomething = true; // to skip empty days
@@ -59,34 +61,43 @@ void RSIOverlay::insertIntoScene(QGraphicsScene* scene) {
 }
 
 QRectF RSIOverlay::Graphics::boundingRect() const {
-	return QRectF(0, 0, ranges.width, ranges.height);
+	return QRectF(0, 0, axisPair.getWidth(), axisPair.getHeight());
 }
 
 QPainterPath RSIOverlay::Graphics::shape() const {
 	// TODO
 	QPainterPath path;
-	path.addRect(0, 0, ranges.width, ranges.height);
+	path.addRect(0, 0, axisPair.getWidth(), axisPair.getHeight());
 	return path;
 }
 
-RSIOverlay::Graphics::Graphics(GraphRanges ranges) {
-	this->ranges = ranges;
-}
+RSIOverlay::Graphics::Graphics(AxisPair pair): axisPair(pair) {}
 
 void RSIOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
-	// TODO: basic levels
-	painter->setPen(QPen(Qt::black, 1.0f));
+	painter->setPen(QPen(Qt::red, 1.0f));
+	painter->drawLine(
+		QPointF(axisPair.getMinTimeX(), axisPair.getPriceY(70.0f)),
+		QPointF(axisPair.getMaxTimeX(), axisPair.getPriceY(70.0f))
+	);
+
+	painter->setPen(QPen(Qt::blue, 1.0f));
+	painter->drawLine(
+		QPointF(axisPair.getMinTimeX(), axisPair.getPriceY(30.0f)),
+		QPointF(axisPair.getMaxTimeX(), axisPair.getPriceY(30.0f))
+	);
+
 
 	for (int i = 1; i < data.size(); i++) {
-		float x1 = ranges.getTimeX(data[i - 1].first),
-			x2 = ranges.getTimeX(data[i].first);
+		float x1 = axisPair.getTimeX(data[i - 1].first),
+			x2 = axisPair.getTimeX(data[i].first);
 
-		painter->setPen(QPen(Qt::blue, 1.0f));
+		painter->setPen(QPen(Qt::black, 1.0f));
 		painter->drawLine(
-			QPointF(x1, ranges.getPriceY(data[i - 1].second)),
-			QPointF(x2, ranges.getPriceY(data[i].second))
+			QPointF(x1, axisPair.getPriceY(data[i - 1].second)),
+			QPointF(x2, axisPair.getPriceY(data[i].second))
 		);
 	}
 }

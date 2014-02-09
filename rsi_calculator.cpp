@@ -2,7 +2,7 @@
 
 #include "rsi_calculator.h"
 
-RSICalculator::RSICalculator(int N) {
+RSICalculator::RSICalculator(unsigned int N) {
 	this->N = N;
 }
 

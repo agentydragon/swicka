@@ -3,34 +3,33 @@
 
 #include "graph_overlay.h"
 #include "bollinger_calculator.h"
+#include "axis_pair.h"
 #include <QGraphicsItem>
-
-class GraphViewport;
 
 class BollingerOverlay: public GraphOverlay {
 	Q_OBJECT
 
 	private:
-		GraphViewport* viewport;
-		GraphRanges ranges;
 		OHLCProvider* projection;
 		int N, K;
+		AxisPair axisPair;
 
 	public slots:
-		virtual void rangesChanged(GraphRanges ranges);
+		virtual void timeAxisChanged(TimeAxis timeAxis);
+		virtual void numberAxisChanged(NumberAxis numberAxis);
 		virtual void projectionChanged(OHLCProvider* projection);
 
 	public:
-		BollingerOverlay(GraphViewport* viewport, int N = 20, int K = 2);
+		BollingerOverlay(int N = 20, int K = 2);
 		virtual void insertIntoScene(QGraphicsScene* scene);
 		virtual ~BollingerOverlay() {}
 
 	private:
 		class Band: public QGraphicsItem {
 			private:
-				GraphRanges ranges;
+				AxisPair axisPair;
 			public:
-				Band(GraphRanges ranges);
+				Band(AxisPair axisPair);
 				QList<QPair<QDateTime,BollingerEntry>> data;
 
 				QRectF boundingRect() const;

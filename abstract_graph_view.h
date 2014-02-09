@@ -3,9 +3,10 @@
 
 #include <QGraphicsView>
 
-#include "graph_viewport.h"
-#include "graph_ranges.h"
+#include "time_axis.h"
+#include "number_axis.h"
 
+class GraphViewport;
 class GraphOverlay;
 
 class AbstractGraphView: public QGraphicsView {
@@ -19,16 +20,18 @@ class AbstractGraphView: public QGraphicsView {
 	protected:
 		QList<GraphOverlay*> overlays;
 		QGraphicsScene *scene;
-		GraphRanges getRanges();
 
 	protected:
 		virtual GraphViewport* viewport() = 0;
 		virtual void internalizeViewport(GraphViewport* viewport) = 0;
 		virtual void addOverlays() = 0;
 
+		virtual TimeAxis timeAxis(); // Def. impl.
+		virtual NumberAxis numberAxis(); // Def. impl.: use ranges from viewport (implicit)
+
 	public slots:
 		void notifyOverlaysProjectionChanged();
-		void notifyOverlaysRangesChanged();
+		virtual void notifyOverlaysRangesChanged();
 
 		void assignViewport(GraphViewport* viewport);
 

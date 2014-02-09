@@ -10,8 +10,12 @@
 #include "macd_calculator.h"
 #include "graph_viewport.h"
 
-void MACDOverlay::rangesChanged(GraphRanges ranges) {
-	this->ranges = ranges;
+void MACDOverlay::timeAxisChanged(TimeAxis timeAxis) {
+	axisPair.timeAxis = timeAxis;
+}
+
+void MACDOverlay::numberAxisChanged(NumberAxis numberAxis) {
+	axisPair.numberAxis = numberAxis;
 }
 
 void MACDOverlay::projectionChanged(OHLCProvider* projection) {
@@ -27,17 +31,17 @@ void MACDOverlay::insertIntoScene(QGraphicsScene* scene) {
 	qDebug() << "Rendering MACD overlay";
 
 	MACDCalculator calculator;
-	Graphics* item = new Graphics(ranges);
+	Graphics* item = new Graphics(axisPair);
 
 	OHLC tick;
 	bool gotSomething = false;
 
 	int N = 10;
 	// hack
-	QDateTime start = projection->getInterval()->minus(ranges.start, N + 1);
+	QDateTime start = projection->getInterval()->minus(axisPair.getMinTime(), N + 1);
 	qDebug() << "MACD overlay start:" << start;
 
-	for (QDateTime i = start; i < ranges.end;
+	for (QDateTime i = start; i < axisPair.getMaxTime();
 			i = projection->getInterval()->firstAfter(i)) {
 		if (projection->tryGetData(i, tick)) {
 			gotSomething = true; // to skip empty days
@@ -57,47 +61,47 @@ void MACDOverlay::insertIntoScene(QGraphicsScene* scene) {
 }
 
 QRectF MACDOverlay::Graphics::boundingRect() const {
-	return QRectF(0, 0, ranges.width, ranges.height);
+	return QRectF(0, 0, axisPair.getWidth(), axisPair.getHeight());
 }
 
 QPainterPath MACDOverlay::Graphics::shape() const {
 	// TODO
 	QPainterPath path;
-	path.addRect(0, 0, ranges.width, ranges.height);
+	path.addRect(0, 0, axisPair.getWidth(), axisPair.getHeight());
 	return path;
 }
 
-MACDOverlay::Graphics::Graphics(GraphRanges ranges) {
-	this->ranges = ranges;
-}
+MACDOverlay::Graphics::Graphics(AxisPair pair): axisPair(pair) {}
 
 // TODO: compose this from basic items rather than a monolith...
 void MACDOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
 	// Zero level
 	painter->setPen(QPen(Qt::black, 1.0f));
-	painter->drawLine(QPointF(0.0f, ranges.getPriceY(0.0f)), QPointF(ranges.width, ranges.getPriceY(0.0f)));
+	painter->drawLine(QPointF(0.0f, axisPair.getPriceY(0.0f)), QPointF(axisPair.getWidth(), axisPair.getPriceY(0.0f)));
 
 	for (int i = 1; i < data.size(); i++) {
-		float x1 = ranges.getTimeX(data[i - 1].first),
-			x2 = ranges.getTimeX(data[i].first);
+		float x1 = axisPair.getTimeX(data[i - 1].first),
+			x2 = axisPair.getTimeX(data[i].first);
 
 		painter->setPen(QPen(Qt::blue, 1.0f));
 		painter->drawLine(
-			QPointF(x1, ranges.getPriceY(data[i - 1].second.macd)),
-			QPointF(x2, ranges.getPriceY(data[i].second.macd))
+			QPointF(x1, axisPair.getPriceY(data[i - 1].second.macd)),
+			QPointF(x2, axisPair.getPriceY(data[i].second.macd))
 		);
 
 		painter->setPen(QPen(Qt::red, 1.0f));
 		painter->drawLine(
-			QPointF(x1, ranges.getPriceY(data[i - 1].second.signal)),
-			QPointF(x2, ranges.getPriceY(data[i].second.signal))
+			QPointF(x1, axisPair.getPriceY(data[i - 1].second.signal)),
+			QPointF(x2, axisPair.getPriceY(data[i].second.signal))
 		);
 	}
 }
 
 // HACK
+/*
 GraphViewport* MACDOverlay::internalizedViewport(GraphViewport* viewport) {
 	OHLCProvider* projection = viewport->getSourceProjection();
 	OHLC tick(0, 0, 0, 0);
@@ -136,3 +140,4 @@ GraphViewport* MACDOverlay::internalizedViewport(GraphViewport* viewport) {
 	// XXX
 	return viewport;
 }
+*/

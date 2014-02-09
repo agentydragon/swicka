@@ -2,7 +2,8 @@
 #define GRAPH_VIEWPORT_H_INCLUDED
 
 #include <QDateTime>
-#include "graph_ranges.h"
+#include "time_range.h"
+#include "number_range.h"
 
 class OHLCProvider;
 
@@ -15,10 +16,6 @@ class GraphViewport: public QObject {
 
 	signals:
 		void changed();
-
-	public:
-		bool explicitYLimits;
-		float yLow, yHigh;
 
 	private:
 		float viewMargin;
@@ -35,9 +32,11 @@ class GraphViewport: public QObject {
 		QDateTime getViewBegin();
 		QDateTime getViewEnd();
 
+		TimeRange getTimeRange();
+		NumberRange getClosureNumberRange();
+
 		OHLCProvider* getSourceProjection();
 
-		GraphRanges getRanges();
 		void reset();
 };
 

@@ -6,12 +6,12 @@
 
 #include "ohlc.h"
 #include "graph_event_controller.h"
-#include "graph_ranges.h"
+#include "axis_pair.h"
 
 class Candle : public QGraphicsItem {
 	public:
 		// TODO: nebyl by lepsi decimal?
-		Candle(QDateTime start, QDateTime end, OHLC ohlc, GraphRanges ranges, GraphEventController* controller);
+		Candle(QDateTime start, QDateTime end, OHLC ohlc, AxisPair axisPair, GraphEventController* controller);
 
 		QRectF boundingRect() const;
 		QPainterPath shape() const;
@@ -30,13 +30,13 @@ class Candle : public QGraphicsItem {
 		void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
 
-		GraphRanges ranges;
+		AxisPair axisPair;
 		OHLC ohlc;
 
 	public:
-		void setRanges(GraphRanges ranges);
+		void setAxisPair(AxisPair axisPair);
 		float getWidth() const;
 		QDateTime getStart();
 };
 
-#endif // CANDLE_H
+#endif

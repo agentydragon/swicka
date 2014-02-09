@@ -3,6 +3,7 @@
 
 #include "macd_graph_view.h"
 #include "macd_overlay.h"
+#include "graph_viewport.h"
 
 #include <assert.h>
 
@@ -11,16 +12,11 @@ MACDGraphView::MACDGraphView() {
 }
 
 GraphViewport* MACDGraphView::viewport() {
-	if (m_viewport) {
-		// TODO: mozna odebrat zachazeni s Y z GraphViewport?
-		GraphViewport* v = MACDOverlay::internalizedViewport(m_viewport);
-		return v; // TODO: cache it!
-	} else return NULL;
+	return m_viewport;
 }
 
 void MACDGraphView::internalizeViewport(GraphViewport* viewport) {
 	qDebug() << "Internalizing new viewport";
-	// TODO: internalize in some other way...
 	m_viewport = viewport;
 
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));

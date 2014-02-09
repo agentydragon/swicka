@@ -5,14 +5,14 @@
 
 #include "graph_view.h"
 #include "graph_overlay.h"
+#include "graph_viewport.h"
 
 #include <assert.h>
 
 void AbstractGraphView::mouseMoveEvent(QMouseEvent *e) {
 	if (viewport()) {
-		GraphRanges ranges = getRanges();
-		QDateTime time = ranges.getXTime(e->x());
-		float price = ranges.getYPrice(e->y());
+		QDateTime time = timeAxis().coordToTime(e->x());
+		float price = numberAxis().coordToNum(e->y());
 		emit dataPointHovered(time, price);
 		e->accept();
 	}
@@ -21,7 +21,7 @@ void AbstractGraphView::mouseMoveEvent(QMouseEvent *e) {
 void AbstractGraphView::wheelEvent(QWheelEvent *e) {
 	if (viewport()) {
 		// if (e->modifiers() & Qt::ControlModifier) {
-		emit dataPointZoomed(getRanges().getXTime(e->x()), e->delta());
+		emit dataPointZoomed(timeAxis().coordToTime(e->x()), e->delta());
 		e->accept();
 	}
 }
@@ -70,20 +70,22 @@ void AbstractGraphView::notifyOverlaysProjectionChanged() {
 void AbstractGraphView::notifyOverlaysRangesChanged() {
 	if (viewport()) {
 		qDebug() << "notifying overlays of ranges change";
-		GraphRanges ranges = getRanges();
+		TimeAxis t = timeAxis();
+		NumberAxis n = numberAxis();
 
 		for (GraphOverlay* overlay: overlays) {
-			overlay->rangesChanged(ranges);
+			overlay->timeAxisChanged(t);
+			overlay->numberAxisChanged(n);
 		}
 	}
 }
 
-GraphRanges AbstractGraphView::getRanges() {
-	assert(viewport());
-	GraphRanges ranges = viewport()->getRanges();
-	ranges.width = width();
-	ranges.height = height();
-	return ranges;
+TimeAxis AbstractGraphView::timeAxis() {
+	return TimeAxis(viewport()->getTimeRange(), 0.0f, width());
+}
+
+NumberAxis AbstractGraphView::numberAxis() {
+	return NumberAxis(viewport()->getClosureNumberRange(), 0.0f, height());
 }
 
 void AbstractGraphView::redraw() {

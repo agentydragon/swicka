@@ -3,6 +3,7 @@
 
 #include "rsi_graph_view.h"
 #include "rsi_overlay.h"
+#include "graph_viewport.h"
 
 #include <assert.h>
 
@@ -11,18 +12,11 @@ RSIGraphView::RSIGraphView() {
 }
 
 GraphViewport* RSIGraphView::viewport() {
-	if (m_viewport) {
-		GraphViewport* v = m_viewport->duplicate();
-		v->explicitYLimits = true;
-		v->yLow = 0;
-		v->yHigh = 100;
-		return v; // TODO: cache it!
-	} else return NULL;
+	return m_viewport;
 }
 
 void RSIGraphView::internalizeViewport(GraphViewport* viewport) {
 	qDebug() << "Internalizing new viewport";
-	// TODO: internalize in some other way...
 	m_viewport = viewport;
 
 	connect(viewport, SIGNAL(changed()), this, SLOT(notifyOverlaysProjectionChanged()));
@@ -31,6 +25,10 @@ void RSIGraphView::internalizeViewport(GraphViewport* viewport) {
 }
 
 void RSIGraphView::addOverlays() {
-	qDebug() << "Adding overlays";
-	overlays.push_back(new RSIOverlay(viewport()));
+	qDebug() << "Adding RSI overlay";
+	overlays.push_back(new RSIOverlay());
+}
+
+NumberAxis RSIGraphView::numberAxis() {
+	return NumberAxis(0.0f, 100.0f, 0.0f, height());
 }

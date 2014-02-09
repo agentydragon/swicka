@@ -11,13 +11,17 @@
 // upper: MA + K\sigma (smerodatna odchylka)
 // lower: MA - K\sigma (smerodatna odchylka)
 
-BollingerOverlay::BollingerOverlay(GraphViewport* viewport, int N, int K) {
+BollingerOverlay::BollingerOverlay(int N, int K) {
 	this->N = N;
 	this->K = K;
 }
 
-void BollingerOverlay::rangesChanged(GraphRanges ranges) {
-	this->ranges = ranges;
+void BollingerOverlay::timeAxisChanged(TimeAxis timeAxis) {
+	axisPair.timeAxis = timeAxis;
+}
+
+void BollingerOverlay::numberAxisChanged(NumberAxis numberAxis) {
+	axisPair.numberAxis = numberAxis;
 }
 
 void BollingerOverlay::projectionChanged(OHLCProvider* projection) {
@@ -27,15 +31,15 @@ void BollingerOverlay::projectionChanged(OHLCProvider* projection) {
 void BollingerOverlay::insertIntoScene(QGraphicsScene* scene) {
 	qDebug() << "Rendering bollinger overlay";
 
-	Band* item = new Band(ranges);
+	Band* item = new Band(axisPair);
 	BollingerCalculator calculator;
 
 	OHLC tick;
 	bool gotSomething = false;
 
-	QDateTime start = projection->getInterval()->minus(ranges.start, N + 1);
+	QDateTime start = projection->getInterval()->minus(axisPair.getMinTime(), N + 1);
 	qDebug() << "Bollinger overlay start:" << start;
-	for (QDateTime i = start; i < ranges.end;
+	for (QDateTime i = start; i < axisPair.getMaxTime();
 			i = projection->getInterval()->firstAfter(i)) {
 		if (projection->tryGetData(i, tick)) {
 			gotSomething = true; // to skip empty days
@@ -57,19 +61,17 @@ void BollingerOverlay::insertIntoScene(QGraphicsScene* scene) {
 }
 
 QRectF BollingerOverlay::Band::boundingRect() const {
-	return QRectF(0, 0, ranges.width, ranges.height);
+	return QRectF(0, 0, axisPair.getWidth(), axisPair.getHeight());
 }
 
 QPainterPath BollingerOverlay::Band::shape() const {
 	// TODO
 	QPainterPath path;
-	path.addRect(0, 0, ranges.width, ranges.height);
+	path.addRect(0, 0, axisPair.getWidth(), axisPair.getHeight());
 	return path;
 }
 
-BollingerOverlay::Band::Band(GraphRanges ranges) {
-	this->ranges = ranges;
-}
+BollingerOverlay::Band::Band(AxisPair pair): axisPair(pair) {}
 
 void BollingerOverlay::Band::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	Q_UNUSED(widget);
@@ -80,21 +82,21 @@ void BollingerOverlay::Band::paint(QPainter *painter, const QStyleOptionGraphics
 
 	QPolygonF band;
 	for (int i = 0; i < data.size(); i++) {
-		band << QPointF(ranges.getTimeX(data[i].first), ranges.getPriceY(data[i].second.ceiling));
+		band << QPointF(axisPair.getTimeX(data[i].first), axisPair.getPriceY(data[i].second.ceiling));
 	}
 	for (int i = data.size() - 1; i >= 0; i--) {
-		band << QPointF(ranges.getTimeX(data[i].first), ranges.getPriceY(data[i].second.floor));
+		band << QPointF(axisPair.getTimeX(data[i].first), axisPair.getPriceY(data[i].second.floor));
 	}
 	painter->drawPolygon(band);
 
 	for (int i = 1; i < data.size(); i++) {
-		float x1 = ranges.getTimeX(data[i - 1].first),
-			x2 = ranges.getTimeX(data[i].first);
+		float x1 = axisPair.getTimeX(data[i - 1].first),
+			x2 = axisPair.getTimeX(data[i].first);
 
 		painter->setPen(QPen(Qt::blue, 2.0f));
 		painter->drawLine(
-			QPointF(x1, ranges.getPriceY(data[i - 1].second.midpoint)),
-			QPointF(x2, ranges.getPriceY(data[i].second.midpoint))
+			QPointF(x1, axisPair.getPriceY(data[i - 1].second.midpoint)),
+			QPointF(x2, axisPair.getPriceY(data[i].second.midpoint))
 		);
 	}
 

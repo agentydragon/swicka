@@ -1,7 +1,8 @@
 #ifndef GRAPH_OVERLAY_H_INCLUDED
 #define GRAPH_OVERLAY_H_INCLUDED
 
-#include "graph_ranges.h"
+#include "number_axis.h"
+#include "time_axis.h"
 
 class QGraphicsScene;
 class OHLCProvider;
@@ -14,7 +15,8 @@ class GraphOverlay: public QObject {
 		virtual ~GraphOverlay() {}
 
 	public slots:
-		virtual void rangesChanged(GraphRanges ranges) = 0;
+		virtual void timeAxisChanged(TimeAxis timeAxis) = 0;
+		virtual void numberAxisChanged(NumberAxis numberAxis) = 0;
 		virtual void projectionChanged(OHLCProvider* projection) = 0;
 };
 
