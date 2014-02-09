@@ -1,18 +1,13 @@
 TODO:
-	- hezci popisky u os (datum)
-	- padding okolo os
-
 	- nacitani dat ze souboru
 	- GUIcko k otevreni dat z Yahoo
-	- MACD
 	- cary, sipky, Fibonacci retractments
 	- load/save graph (recipe)
 	- image export
 	- prepocitavani svicek na vetsi (1 day ==> 7 day) -- pri prilis velkem odzoomovani
 
-	- optimalizace pocitani vzdalenosti ve dnech a mesicich
-
 NICE TO HAVE:
+	- optimalizace pocitani vzdalenosti ve dnech a mesicich
 	- ukazovatko
 	- parabolic SAR
 	- logarithmic scale
