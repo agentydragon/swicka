@@ -1,6 +1,5 @@
 #include "view.h"
 
-#include "ohlc_standardizer.h"
 #include "ohlc_shrinker.h"
 #include "ohlc_random_generator.h"
 
@@ -108,13 +107,13 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
 	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
 	*/
-	// connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoom()));
-	// connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
 
 	resetView();
 
 	connect(mainGraph, SIGNAL(dataPointHovered(QDateTime, float)), this, SLOT(graphViewDataPointHovered(QDateTime, float)));
 	connect(mainGraph, SIGNAL(dataPointZoomed(QDateTime, int)), this, SLOT(zoom(QDateTime, int)));
+	connect(RSIGraph, SIGNAL(dataPointZoomed(QDateTime, int)), this, SLOT(zoom(QDateTime, int)));
+	connect(MACDGraph, SIGNAL(dataPointZoomed(QDateTime, int)), this, SLOT(zoom(QDateTime, int)));
 }
 
 void View::graphViewDataPointHovered(QDateTime time, float price) {

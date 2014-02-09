@@ -13,7 +13,7 @@ QList<QPair<QDateTime, QString> > XAxisDayLabeler::makeLabels(QDateTime start, Q
 	for (; a <= end.date(); ) {
 		QString format;
 		if (a.year() != last.year() || a == last) {
-			format = "dd.MM.YYYY";
+			format = "dd.MM.yyyy";
 		} else if (a.month() != last.month()) {
 			format = "dd.MM";
 		} else {

@@ -1,6 +1,7 @@
 #include <QWheelEvent>
 #include <QDebug>
 
+#include "grid.h"
 #include "rsi_graph_view.h"
 #include "rsi_overlay.h"
 #include "graph_viewport.h"
@@ -26,9 +27,10 @@ void RSIGraphView::internalizeViewport(GraphViewport* viewport) {
 
 void RSIGraphView::addOverlays() {
 	qDebug() << "Adding RSI overlay";
+	overlays.push_back(new Grid(false));
 	overlays.push_back(new RSIOverlay());
 }
 
 NumberAxis RSIGraphView::numberAxis() {
-	return NumberAxis(0.0f, 100.0f, 0.0f, height());
+	return NumberAxis("RSI", 0.0f, 100.0f, 0.0f, height());
 }

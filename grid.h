@@ -11,21 +11,23 @@ class Grid: public GraphOverlay {
 
 	private:
 		AxisPair axisPair;
+		bool drawTimeLabels;
 	public slots:
 		virtual void timeAxisChanged(TimeAxis timeAxis);
 		virtual void numberAxisChanged(NumberAxis numberAxis);
 		virtual void projectionChanged(OHLCProvider* projection);
 	public:
-		Grid();
+		Grid(bool drawTimeLabels = true);
 		virtual void insertIntoScene(QGraphicsScene* scene);
 
 		class GridGraphics: public QGraphicsItem {
 		public:
-			GridGraphics(AxisPair axisPair);
+			GridGraphics(AxisPair axisPair, bool drawTimeLabels);
 			void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget);
 			QRectF boundingRect() const;
 			QPainterPath shape() const;
 		private:
+			bool drawTimeLabels;
 			AxisPair axisPair;
 			QList<QPair<QDateTime, QString> > xlabels;
 			QList<QPair<float, QString> > ylabels;

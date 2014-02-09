@@ -1,7 +1,8 @@
 #include "grid.h"
 #include "grid_labeler.h"
 
-Grid::GridGraphics::GridGraphics(AxisPair pair): axisPair(pair) {
+Grid::GridGraphics::GridGraphics(AxisPair pair, bool drawTimeLabels): axisPair(pair) {
+	this->drawTimeLabels = drawTimeLabels;
 	GridLabeler().generateYLabels(axisPair.numberAxis.getMinNum(), axisPair.numberAxis.getMaxNum(), ylabels);
 	GridLabeler().generateXLabels(axisPair.timeAxis.getMinTime(), axisPair.timeAxis.getMaxTime(), xlabels);
 }
@@ -12,13 +13,17 @@ void Grid::GridGraphics::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 	painter->setFont(QFont("Arial", 7));
 
-	QPen gridPen = QPen(Qt::gray, 0.5f);
+	painter->setPen(QPen(Qt::black, 1.0f));
+	painter->drawText(QRect(3, axisPair.numberAxis.getCenterCoord(), 50.0f, 15.0f), Qt::AlignLeft, axisPair.numberAxis.getLabel());
 
+	float timeLabelsX = axisPair.getMinTimeX() - 50.0f;
+
+	QPen gridPen = QPen(Qt::gray, 0.5f);
 	for (QPair<float, QString> label: ylabels) {
 		float y = axisPair.getPriceY(label.first);
 
 		painter->setPen(Qt::blue);
-		painter->drawText(QRect(10, y, 50.0f, 15.0f), Qt::AlignLeft, label.second);
+		painter->drawText(QRect(timeLabelsX, y, 50.0f, 15.0f), Qt::AlignLeft, label.second);
 
 		painter->setPen(gridPen);
 		painter->drawLine(QPointF(axisPair.getMinTimeX(), y), QPointF(axisPair.getMaxTimeX(), y));
@@ -27,8 +32,10 @@ void Grid::GridGraphics::paint(QPainter *painter, const QStyleOptionGraphicsItem
 	for (QPair<QDateTime, QString> label: xlabels) {
 		float x = axisPair.getTimeX(label.first);
 
-		painter->setPen(Qt::red);
-		painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignLeft, label.second);
+		if (drawTimeLabels) {
+			painter->setPen(Qt::red);
+			painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignLeft, label.second);
+		}
 
 		painter->setPen(gridPen);
 		painter->drawLine(QPointF(x, axisPair.getMinPriceY()), QPointF(x, axisPair.getMaxPriceY()));
@@ -45,12 +52,12 @@ QPainterPath Grid::GridGraphics::shape() const {
 	return path;
 }
 
-Grid::Grid() {
+Grid::Grid(bool drawTimeLabels) {
+	this->drawTimeLabels = drawTimeLabels;
 }
 
 void Grid::insertIntoScene(QGraphicsScene* scene) {
-	scene->addItem(new GridGraphics(axisPair));
-	// TODO: reuse
+	scene->addItem(new GridGraphics(axisPair, drawTimeLabels));
 }
 
 void Grid::numberAxisChanged(NumberAxis numberAxis) {

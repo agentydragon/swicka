@@ -84,13 +84,14 @@ void AbstractGraphView::notifyOverlaysRangesChanged() {
 }
 
 TimeAxis AbstractGraphView::timeAxis() {
-	float x_margin = 50.0f;
+	float x_margin = 100.0f;
 	return TimeAxis(viewport()->getTimeRange(), x_margin, width());
 }
 
 NumberAxis AbstractGraphView::numberAxis() {
 	float y_margin = 50.0f;
-	return NumberAxis(viewport()->getClosureNumberRange(), y_margin, height());
+	QString money_unit = "Hodnota";
+	return NumberAxis(money_unit, viewport()->getClosureNumberRange(), y_margin, height());
 }
 
 void AbstractGraphView::redraw() {

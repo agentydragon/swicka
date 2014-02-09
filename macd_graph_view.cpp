@@ -5,6 +5,7 @@
 #include "macd_overlay.h"
 #include "graph_viewport.h"
 #include "ohlc_provider.h"
+#include "grid.h"
 
 #include <assert.h>
 
@@ -27,6 +28,7 @@ void MACDGraphView::internalizeViewport(GraphViewport* viewport) {
 
 void MACDGraphView::addOverlays() {
 	qDebug() << "Adding overlays";
+	overlays.push_back(new Grid(false));
 	overlays.push_back(new MACDOverlay(viewport()));
 }
 
@@ -66,5 +68,5 @@ NumberAxis MACDGraphView::numberAxis() {
 	}
 	// qDebug() << "MACD closure:" << closure;
 
-	return NumberAxis(closure.low, closure.high, 0.0f, height());
+	return NumberAxis("MACD", closure.low, closure.high, 0.0f, height());
 }
