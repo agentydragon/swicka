@@ -100,10 +100,15 @@ void MACDOverlay::Graphics::paint(QPainter *painter, const QStyleOptionGraphicsI
 		);
 
 		float margin = (x2 - x1) * 0.2;
+		float width = (x2 - x1) - margin;
 		// TODO: separatni osa
-		QRectF rect(x1, zero, (x2 - x1) - margin, axisPair.getPriceY(data[i - 1].second.histogram) - zero);
+		QRectF rect(x1, zero, width, axisPair.getPriceY(data[i - 1].second.histogram) - zero);
 
 		QColor fillColor = QColor(200, 200, 200);
 		painter->fillRect(rect, QBrush(fillColor));
+		if (width > 2.0f) {
+			painter->setPen(QPen(Qt::black, width / 20.0f));
+			painter->drawRect(rect);
+		}
 	}
 }

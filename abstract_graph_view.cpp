@@ -36,6 +36,9 @@ AbstractGraphView::AbstractGraphView() {
 	scene->setParent(this);
 
 	setMouseTracking(true);
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setRenderHint(QPainter::Antialiasing, true);
 
 	connect(this, SIGNAL(resized()), this, SLOT(notifyOverlaysRangesChanged()));
 	connect(this, SIGNAL(resized()), this, SLOT(redraw()));

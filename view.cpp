@@ -28,27 +28,12 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	setFrameStyle(Sunken | StyledPanel);
 	mainGraph = new GraphView();
 	mainGraph->setParent(this);
-	mainGraph->setRenderHint(QPainter::Antialiasing, false);
-	mainGraph->setDragMode(QGraphicsView::RubberBandDrag);
-	mainGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-	mainGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-	mainGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	RSIGraph = new RSIGraphView();
 	RSIGraph->setParent(this);
-	RSIGraph->setRenderHint(QPainter::Antialiasing, false);
-	RSIGraph->setDragMode(QGraphicsView::RubberBandDrag);
-	RSIGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-	RSIGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-	RSIGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	MACDGraph = new MACDGraphView();
 	MACDGraph->setParent(this);
-	MACDGraph->setRenderHint(QPainter::Antialiasing, false);
-	MACDGraph->setDragMode(QGraphicsView::RubberBandDrag);
-	MACDGraph->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-	MACDGraph->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-	MACDGraph->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 	QSize iconSize(size, size);
@@ -77,10 +62,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	dragModeButton->setText(tr("Drag"));
 	dragModeButton->setCheckable(true);
 	dragModeButton->setChecked(false);
-	antialiasButton = new QToolButton;
-	antialiasButton->setText(tr("Antialiasing"));
-	antialiasButton->setCheckable(true);
-	antialiasButton->setChecked(false);
 	openGlButton = new QToolButton;
 	openGlButton->setText(tr("OpenGL"));
 	openGlButton->setCheckable(true);
@@ -104,7 +85,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	*/
 	labelLayout->addStretch();
 	/*
-	labelLayout->addWidget(antialiasButton);
 	labelLayout->addWidget(openGlButton);
 	*/
 
@@ -126,7 +106,6 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	/*
 	connect(selectModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
 	connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
-	connect(antialiasButton, SIGNAL(toggled(bool)), this, SLOT(toggleAntialiasing()));
 	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
 	*/
 	// connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoom()));
@@ -169,10 +148,6 @@ void View::toggleOpenGL() {
 #ifndef QT_NO_OPENGL
 	mainGraph->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
 #endif
-}
-
-void View::toggleAntialiasing() {
-	mainGraph->setRenderHint(QPainter::Antialiasing, antialiasButton->isChecked());
 }
 */
 
