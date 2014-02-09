@@ -11,10 +11,18 @@ QList<QPair<QDateTime, QString> > XAxisDayLabeler::makeLabels(QDateTime start, Q
 
 	QList<QPair<QDateTime, QString> > labels;
 	for (; a <= end.date(); ) {
+		QString format;
+		if (a.year() != last.year() || a == last) {
+			format = "dd.MM.YYYY";
+		} else if (a.month() != last.month()) {
+			format = "dd.MM";
+		} else {
+			format = "dd";
+		}
 		if (a.month() != last.month()) {
 			a = QDate(a.year(), a.month(), 1); // Reset on month boundary
 		}
-		labels.push_back(QPair<QDateTime, QString>(QDateTime(a), a.toString("dd.MM.")));
+		labels.push_back(QPair<QDateTime, QString>(QDateTime(a), a.toString(format)));
 
 		last = a;
 		a = a.addDays(every);
