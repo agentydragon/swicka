@@ -8,6 +8,7 @@
 
 class XAxisLabeler {
 	public:
+		virtual ~XAxisLabeler() {};
 		virtual QList<QPair<QDateTime, QString> > makeLabels(QDateTime start, QDateTime end) = 0;
 };
 

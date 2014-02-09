@@ -12,23 +12,25 @@ void Grid::GridGraphics::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 	painter->setFont(QFont("Arial", 7));
 
+	QPen gridPen = QPen(Qt::gray, 0.5f);
+
 	for (QPair<float, QString> label: ylabels) {
 		float y = axisPair.getPriceY(label.first);
 
 		painter->setPen(Qt::blue);
-		painter->drawText(QRect(10, y, 50.0f, 15.0f), Qt::AlignCenter, label.second);
+		painter->drawText(QRect(10, y, 50.0f, 15.0f), Qt::AlignLeft, label.second);
 
-		painter->setPen(Qt::black);
-		painter->drawLine(0.0f, y, axisPair.getWidth(), y);
+		painter->setPen(gridPen);
+		painter->drawLine(QPointF(axisPair.getMinTimeX(), y), QPointF(axisPair.getMaxTimeX(), y));
 	}
 
 	for (QPair<QDateTime, QString> label: xlabels) {
 		float x = axisPair.getTimeX(label.first);
 
 		painter->setPen(Qt::red);
-		painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignCenter, label.second);
+		painter->drawText(QRect(x, 10, 50.0f, 20.0f), Qt::AlignLeft, label.second);
 
-		painter->setPen(Qt::gray);
+		painter->setPen(gridPen);
 		painter->drawLine(x, 0.0, x, axisPair.getHeight());
 	}
 }

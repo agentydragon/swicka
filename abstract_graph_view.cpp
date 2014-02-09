@@ -84,11 +84,13 @@ void AbstractGraphView::notifyOverlaysRangesChanged() {
 }
 
 TimeAxis AbstractGraphView::timeAxis() {
-	return TimeAxis(viewport()->getTimeRange(), 0.0f, width());
+	float x_margin = 50.0f;
+	return TimeAxis(viewport()->getTimeRange(), x_margin, width());
 }
 
 NumberAxis AbstractGraphView::numberAxis() {
-	return NumberAxis(viewport()->getClosureNumberRange(), 0.0f, height());
+	float y_margin = 50.0f;
+	return NumberAxis(viewport()->getClosureNumberRange(), y_margin, height());
 }
 
 void AbstractGraphView::redraw() {

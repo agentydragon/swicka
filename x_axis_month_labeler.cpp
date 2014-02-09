@@ -2,14 +2,26 @@
 
 #include <QDebug>
 
+XAxisMonthLabeler::XAxisMonthLabeler(int every) {
+	this->every = every;
+}
+
 QList<QPair<QDateTime, QString> > XAxisMonthLabeler::makeLabels(QDateTime start, QDateTime end) {
-	QDateTime a = start;
-	a.setTime(QTime(0, 0, 0));
-	a.setDate(QDate(a.date().year(), a.date().month(), 1));
+	QDate a = QDate(start.date().year(), start.date().month(), 1);
 
 	QList<QPair<QDateTime, QString> > labels;
-	for (; a <= end; a.setDate(a.date().addMonths(1))) {
-		labels.push_back(QPair<QDateTime, QString>(a, a.toString("MM/yyyy")));
+
+	QDate last = a;
+	while (a <= end.date()) {
+		qDebug() << a << "; last=" << last;
+		if (a.year() > last.year()) { // reset on year boundaries
+			a = QDate(a.year(), 1, 1);
+		}
+
+		QDateTime dt(a);
+		labels.push_back(QPair<QDateTime, QString>(dt, a.toString("MM/yyyy")));
+		last = a;
+		a = a.addMonths(every);
 	}
 	return labels;
 }

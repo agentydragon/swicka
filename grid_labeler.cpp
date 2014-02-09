@@ -72,12 +72,26 @@ void GridLabeler::generateXLabels(QDateTime min, QDateTime max, QList<QPair<QDat
 		qDebug() << "empty range";
 		return;
 	}
-	XAxisMonthLabeler monthLabeler;
 	QList<XAxisLabeler*> labelers;
+	// From coarse to fine
+	labelers.push_back(new XAxisYearLabeler());
+	labelers.push_back(new XAxisMonthLabeler(3));
+	labelers.push_back(new XAxisMonthLabeler(2));
+	labelers.push_back(new XAxisMonthLabeler(1));
+	labelers.push_back(new XAxisDayLabeler(14));
+	labelers.push_back(new XAxisDayLabeler(7));
+	labelers.push_back(new XAxisDayLabeler(2));
+	labelers.push_back(new XAxisDayLabeler(1));
+
 	// TODO: choose 2 most appropriate labelers...
-	//labelers.push_back(new XAxisYearLabeler);
-	labelers.push_back(&monthLabeler);
-	//labelers.push_back(new XAxisDayLabeler);
-	labels = labelers[0]->makeLabels(min, max);
+	int labelsLeast = 5, labelsMost = 11;
+
+	for (XAxisLabeler* labeler: labelers) {
+		labels = labeler->makeLabels(min, max);
+		if (labels.size() > labelsLeast) break;
+	}
+
+	for (XAxisLabeler* labeler: labelers) delete labeler; // TODO: make persistent...
+
 	qDebug() << "X labels generated";
 }
