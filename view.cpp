@@ -34,58 +34,8 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	MACDGraph = new MACDGraphView();
 	MACDGraph->setParent(this);
 
-	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
-	QSize iconSize(size, size);
-
-	/*
-	QToolButton* zoomInIcon = new QToolButton;
-	QToolButton* zoomOutIcon = new QToolButton;
-
-	// Zoom slider layout
-	QVBoxLayout *zoomSliderLayout = new QVBoxLayout;
-	zoomSliderLayout->addWidget(zoomInIcon);
-	zoomSliderLayout->addWidget(zoomOutIcon);
-	*/
-
 	resetButton = new QToolButton;
 	resetButton->setText(tr("Reset"));
-
-	// Label layout
-	// QHBoxLayout *labelLayout = new QHBoxLayout;
-	// label = new QLabel(name);
-	// label2 = new QLabel(tr("Pointer Mode"));
-	/*
-	selectModeButton = new QToolButton;
-	selectModeButton->setText(tr("Select"));
-	selectModeButton->setCheckable(true);
-	selectModeButton->setChecked(true);
-	dragModeButton = new QToolButton;
-	dragModeButton->setText(tr("Drag"));
-	dragModeButton->setCheckable(true);
-	dragModeButton->setChecked(false);
-	openGlButton = new QToolButton;
-	openGlButton->setText(tr("OpenGL"));
-	openGlButton->setCheckable(true);
-#ifndef QT_NO_OPENGL
-	openGlButton->setEnabled(QGLFormat::hasOpenGL());
-#else
-	openGlButton->setEnabled(false);
-#endif
-	QButtonGroup *pointerModeGroup = new QButtonGroup(this);
-	pointerModeGroup->setExclusive(true);
-	pointerModeGroup->addButton(selectModeButton);
-	pointerModeGroup->addButton(dragModeButton);
-
-	labelLayout->addWidget(label);
-	labelLayout->addStretch();
-	labelLayout->addWidget(label2);
-	labelLayout->addWidget(selectModeButton);
-	labelLayout->addWidget(dragModeButton);
-	labelLayout->addStretch();
-	labelLayout->addWidget(openGlButton);
-
-	topLayout->addLayout(labelLayout, 0, 0);
-	*/
 
 	QSplitter* splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Vertical);
@@ -95,16 +45,10 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 
 	QGridLayout *topLayout = new QGridLayout;
 	topLayout->addWidget(splitter, 1, 0);
-	// topLayout->addLayout(zoomSliderLayout, 1, 1);
 	topLayout->addWidget(resetButton, 2, 1);
 	setLayout(topLayout);
 
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(resetView()));
-	/*
-	connect(selectModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
-	connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
-	connect(openGlButton, SIGNAL(toggled(bool)), this, SLOT(toggleOpenGL()));
-	*/
 
 	resetView();
 
@@ -132,21 +76,6 @@ void View::resetView() {
 		qDebug() << "calling resetView with no source, doing nothing";
 	}
 }
-
-/*
-void View::togglePointerMode() {
-	mainGraph->setDragMode(selectModeButton->isChecked()
-			? QGraphicsView::RubberBandDrag
-			: QGraphicsView::ScrollHandDrag);
-	mainGraph->setInteractive(selectModeButton->isChecked());
-}
-
-void View::toggleOpenGL() {
-#ifndef QT_NO_OPENGL
-	mainGraph->setViewport(openGlButton->isChecked() ? new QGLWidget(QGLFormat(QGL::SampleBuffers)) : new QWidget);
-#endif
-}
-*/
 
 void View::zoom(QDateTime center, int delta) {
 	if (viewport) {

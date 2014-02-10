@@ -99,14 +99,4 @@ void BollingerOverlay::Band::paint(QPainter *painter, const QStyleOptionGraphics
 			QPointF(x2, axisPair.getPriceY(data[i].second.midpoint))
 		);
 	}
-
-	// Draw lines
-	/*
-	QVarLengthArray<QLineF, 36> lines;
-	for (int i = 0; i <= 6; i += (lod > 0.5 ? 1 : 2)) {
-		lines.append(QLineF(5, 18 + i * 5, 13, 18 + i * 5));
-		lines.append(QLineF(94, 18 + i * 5, 102, 18 + i * 5));
-	}
-	painter->drawLines(lines.data(), lines.size());
-	*/
 }

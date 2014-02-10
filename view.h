@@ -23,14 +23,8 @@ class View : public QFrame {
 		void dataPointHovered(QDateTime time, float price);
 
 	public slots:
-		// void zoom(int level = 1, int x = -1);
 		void changeDataSource(OHLCProvider* source);
 		void resetView(); // reset to default view
-
-	// private slots:
-		// void togglePointerMode();
-		// void toggleOpenGL();
-		// void toggleAntialiasing();
 
 	private:
 		GraphViewport *viewport;
@@ -40,12 +34,6 @@ class View : public QFrame {
 		AbstractGraphView *mainGraph;
 		AbstractGraphView *RSIGraph;
 		AbstractGraphView *MACDGraph;
-		// QLabel *label;
-		// QLabel *label2;
-		//QToolButton *selectModeButton;
-		//QToolButton *dragModeButton;
-		//QToolButton *openGlButton;
-		//QToolButton *antialiasButton;
 		QToolButton *resetButton;
 	public:
 		int getViewportWidth(); int getViewportHeight();

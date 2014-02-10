@@ -27,13 +27,5 @@ bool OHLCShrinker::tryGetData(QDateTime start, OHLC& output) {
 		}
 	}
 
-	/*
-	if (!someCollected) {
-		qDebug() << "parent said nothing for" << start;
-	} else {
-		qDebug() << "output: " << output;
-	}
-	*/
-
 	return someCollected;
 }
