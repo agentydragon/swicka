@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	createActions();
 	createMenus();
 
-	statusBar()->showMessage("Hello world");
 
 	// loadData();
 	// doLoadYahooStock("GOOG");
@@ -67,6 +66,7 @@ void MainWindow::exportImage() {
 	painter.setRenderHint(QPainter::Antialiasing);
 	view->getMainScene()->render(&painter);
 	image.save(filename);
+	statusBar()->showMessage("Graf byl exportovan.");
 }
 
 void MainWindow::doLoadYahooStock(QString symbol) {
@@ -89,6 +89,7 @@ void MainWindow::doLoadYahooStock(QString symbol) {
 }
 
 void MainWindow::drawData() {
+	statusBar()->showMessage("Data byla nahrana.");
 	// view->changeDataSource(new OHLCShrinker(source, source->getMinimum(), source->getMaximum(), new CI::Month));
 	view->changeDataSource(source);
 }

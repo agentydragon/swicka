@@ -37,6 +37,7 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 	QSize iconSize(size, size);
 
+	/*
 	QToolButton* zoomInIcon = new QToolButton;
 	QToolButton* zoomOutIcon = new QToolButton;
 
@@ -44,14 +45,15 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	QVBoxLayout *zoomSliderLayout = new QVBoxLayout;
 	zoomSliderLayout->addWidget(zoomInIcon);
 	zoomSliderLayout->addWidget(zoomOutIcon);
+	*/
 
 	resetButton = new QToolButton;
-	resetButton->setText(tr("0"));
+	resetButton->setText(tr("Reset"));
 
 	// Label layout
-	QHBoxLayout *labelLayout = new QHBoxLayout;
-	label = new QLabel(name);
-	label2 = new QLabel(tr("Pointer Mode"));
+	// QHBoxLayout *labelLayout = new QHBoxLayout;
+	// label = new QLabel(name);
+	// label2 = new QLabel(tr("Pointer Mode"));
 	/*
 	selectModeButton = new QToolButton;
 	selectModeButton->setText(tr("Select"));
@@ -73,22 +75,17 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	pointerModeGroup->setExclusive(true);
 	pointerModeGroup->addButton(selectModeButton);
 	pointerModeGroup->addButton(dragModeButton);
-	*/
 
 	labelLayout->addWidget(label);
 	labelLayout->addStretch();
 	labelLayout->addWidget(label2);
-	/*
 	labelLayout->addWidget(selectModeButton);
 	labelLayout->addWidget(dragModeButton);
-	*/
 	labelLayout->addStretch();
-	/*
 	labelLayout->addWidget(openGlButton);
-	*/
 
-	QGridLayout *topLayout = new QGridLayout;
 	topLayout->addLayout(labelLayout, 0, 0);
+	*/
 
 	QSplitter* splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Vertical);
@@ -96,8 +93,9 @@ View::View(const QString &name, QWidget *parent) : QFrame(parent) {
 	splitter->addWidget(RSIGraph);
 	splitter->addWidget(MACDGraph);
 
+	QGridLayout *topLayout = new QGridLayout;
 	topLayout->addWidget(splitter, 1, 0);
-	topLayout->addLayout(zoomSliderLayout, 1, 1);
+	// topLayout->addLayout(zoomSliderLayout, 1, 1);
 	topLayout->addWidget(resetButton, 2, 1);
 	setLayout(topLayout);
 
