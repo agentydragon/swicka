@@ -4,6 +4,8 @@
 #include "number_axis.h"
 #include "time_axis.h"
 
+#include <QObject>
+
 class QGraphicsScene;
 class OHLCProvider;
 

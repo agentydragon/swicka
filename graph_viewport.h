@@ -1,6 +1,7 @@
 #ifndef GRAPH_VIEWPORT_H_INCLUDED
 #define GRAPH_VIEWPORT_H_INCLUDED
 
+#include <QObject>
 #include <QDateTime>
 #include "time_range.h"
 #include "number_range.h"
